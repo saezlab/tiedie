@@ -1,10 +1,8 @@
-from __future__ import print_function
-from __future__ import division
-#from __future__ import unicode_literals
-from numpy import genfromtxt, dot
-import sys
 import math
+import sys
 from array import array
+
+from numpy import dot, genfromtxt
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import expm
 

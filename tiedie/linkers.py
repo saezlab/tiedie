@@ -1,7 +1,4 @@
-from __future__ import print_function
-from __future__ import division
-#from __future__ import unicode_literals
-from tiedie_util import *
+from .util import *
 
 def min(vals):
 	min = vals[0]
@@ -15,7 +12,7 @@ def getProduct(diffused):
 	gene_scores = {}
 	for file in diffused:
 		# a hash of hashes: file is the index
-		for (gene, heat) in diffused[file].iteritems():
+		for (gene, heat) in diffused[file].items():
 			if gene not in gene_scores:
 				gene_scores[gene] = []
 			gene_scores[gene].append(heat)
@@ -45,7 +42,7 @@ def getMinHeats(consider_top, diffused):
 	gene_scores = {}
 	for file in diffused:
 		# a hash of hashes: file is the index
-		for (gene, heat) in diffused[file].iteritems():
+		for (gene, heat) in diffused[file].items():
 			if gene not in gene_scores:
 				gene_scores[gene] = []
 			gene_scores[gene].append(heat)
@@ -74,7 +71,7 @@ def getMaxHeats(consider_top, diffused):
 	gene_scores = {}
 	for file in diffused:
 		# a hash of hashes: file is the index
-		for (gene, heat) in diffused[file].iteritems():
+		for (gene, heat) in diffused[file].items():
 			if gene not in gene_scores:
 				gene_scores[gene] = []
 			gene_scores[gene].append(heat)
@@ -131,7 +128,7 @@ def extractSubnetwork(network, input_heats, diffused_heats, size_control, opts):
 	score = None
 	linkers = set()
 	linker_scores = {}
-	for (l,h) in sorted(linker_heats.iteritems(), key=operator.itemgetter(1), reverse=True):
+	for (l,h) in sorted(linker_heats.items(), key=operator.itemgetter(1), reverse=True):
 		c = h-EPSILON
 		score, size_frac = linkerScore(input_heats, linker_heats, c, size_control)
 		linker_cutoff = c
@@ -179,7 +176,7 @@ def linkerScore(input_heats, min_heats, cutoff, size):
 
 	# generate the set of linker genes according to the supplied heat cutoff.
 	all_linkers = set()
-	for (gene, heat) in sorted(min_heats.iteritems(), key=operator.itemgetter(1), reverse=True):
+	for (gene, heat) in sorted(min_heats.items(), key=operator.itemgetter(1), reverse=True):
 		if heat < cutoff:
 			break
 		all_linkers.add(gene)

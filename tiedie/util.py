@@ -1,7 +1,10 @@
-from __future__ import print_function
-from __future__ import division
-#from __future__ import unicode_literals
-import re, math, os, sys, operator, random
+import math
+import operator
+import os
+import random
+import re
+import sys
+
 import networkx as nx
 
 def parseHeats(file, network_nodes=None):
@@ -377,7 +380,7 @@ def findLinkerCutoffSingle(source_set, up_heat_diffused, size):
 
 	i = 1
 	cutoff = None
-	for (gene, heat) in sorted(up_heat_diffused.iteritems(), key=operator.itemgetter(1), reverse=True):
+	for (gene, heat) in sorted(up_heat_diffused.items(), key=operator.itemgetter(1), reverse=True):
 
 		# add an epsilon to the cutoff so that the threshold falls just above this gene
 		cutoff = heat+EPSILON
@@ -411,7 +414,7 @@ def findLinkerCutoffMulti(source_set, target_set, up_heat_diffused, down_heat_di
 
 	f, min_heats = filterLinkers(up_heat_diffused,down_heat_diffused,1)
 	# Iterate through the reverse-sorted list of heats. Stop when the exclusive set of nodes is below the desired size
-	for cutoff in [h-EPSILON for (l,h) in sorted(min_heats.iteritems(), key=operator.itemgetter(1), reverse=True)]:
+	for cutoff in [h-EPSILON for (l,h) in sorted(min_heats.items(), key=operator.itemgetter(1), reverse=True)]:
 		score, size_frac = scoreLinkers(up_heat_diffused, up_sorted, down_heat_diffused, down_sorted, source_set, target_set, cutoff, size)
 
 		# reached the desired size: return the score & cutoff
@@ -483,7 +486,7 @@ def scoreLinkersMulti(input_heats, min_heats, cutoff, size):
 
 	# generate the set of linker genes according to the supplied heat cutoff.
 	all_linkers = set()
-	for (gene, heat) in sorted(min_heats.iteritems(), key=operator.itemgetter(1), reverse=True):
+	for (gene, heat) in sorted(min_heats.items(), key=operator.itemgetter(1), reverse=True):
 		if heat < cutoff:
 			break
 		all_linkers.add(gene)
@@ -513,7 +516,7 @@ def getMinHeats(diffused):
 	mins = {}
 	for file in diffused:
 		# a hash of hashes: file is the index
-		for (gene, heat) in diffused[file].iteritems():
+		for (gene, heat) in diffused[file].items():
 			if gene in mins:
 				if mins[gene] > heat:
 					mins[gene] = heat
@@ -535,7 +538,7 @@ def getMaxHeats(diffused):
 	"""
 	max = {}
 	for file in diffused:
-		for (gene, heat) in diffused[file].iteritems():
+		for (gene, heat) in diffused[file].items():
 			if gene in max:
 				if max[gene] < heat:
 					max[gene] = heat
@@ -683,8 +686,8 @@ def runPCST(up_heats, down_heats, linker_genes, network_file):
 	# find the maximum heat for any value
 	# the BioNet package requires p-values for an input, so we have to 'fake' these
 	# here, converting them from heats.
-	s_up = sorted([v for k, v in up_heats.iteritems()], reverse=True)
-	s_down = sorted([v for k, v in down_heats.iteritems()], reverse=True)
+	s_up = sorted([v for k, v in up_heats.items()], reverse=True)
+	s_down = sorted([v for k, v in down_heats.items()], reverse=True)
 
 	if len(up_heats) > 0:
 		max_heat = s_up[0]

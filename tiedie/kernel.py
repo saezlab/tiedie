@@ -1,10 +1,8 @@
-from __future__ import print_function
-from __future__ import division
-#from __future__ import unicode_literals
-from numpy import genfromtxt, dot
-import numpy as np
-import sys
 import math
+import sys
+
+import numpy as np
+from numpy import dot, genfromtxt
 
 class Kernel:
 

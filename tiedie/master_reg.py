@@ -1,13 +1,12 @@
-from __future__ import print_function
-from __future__ import division
-#from __future__ import unicode_literals
-from tiedie_util import *
-import operator
 import math
+import operator
 import random
-from scipy import stats
+
 import numpy as np
-from distributions import Dist
+from scipy import stats
+
+from .distributions import Dist
+from .util import *
 
 class ActivityScores:
 	"""
@@ -179,14 +178,14 @@ class ActivityScores:
 
 		forward_genes = []
 		forward_scores = []
-		for (gene, score) in sorted(scores.iteritems(), key=operator.itemgetter(1), reverse=True):
+		for (gene, score) in sorted(scores.items(), key=operator.itemgetter(1), reverse=True):
 			self.gene_list.append(gene)
 			forward_genes.append(gene)
 			forward_scores.append(score)
 		# ascending order
 		reverse_genes = []
 		reverse_scores = []
-		for (gene, score) in sorted(scores.iteritems(), key=operator.itemgetter(1), reverse=False):
+		for (gene, score) in sorted(scores.items(), key=operator.itemgetter(1), reverse=False):
 			reverse_genes.append(gene)
 			reverse_scores.append(score)
 

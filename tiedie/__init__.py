@@ -20,6 +20,7 @@ from .permute import NetBalancedPermuter
 from ._metadata import __author__, __license__, __version__
 from .kernel_scipy import SciPYKernel
 
+
 __all__ = [
     '__version__',
     '__author__',

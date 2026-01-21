@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+
 TEST_DIR = Path(__file__).parent / 'test_files'
 
 

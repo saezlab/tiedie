@@ -5,6 +5,7 @@ from pathlib import Path
 from tiedie import SciPYKernel
 from tiedie.util import parseNet, parseHeats, normalizeHeats, getNetworkNodes
 
+
 TEST_DIR = Path(__file__).parent / 'test_files'
 GBM_PATHWAY = TEST_DIR / 'gbm_pathway.sif'
 GBM_UPSTREAM = TEST_DIR / 'gbm_upstream.input'

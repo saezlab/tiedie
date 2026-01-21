@@ -5,6 +5,7 @@ from pathlib import Path
 from tiedie import Kernel, SciPYKernel
 from tiedie.util import parseHeats
 
+
 TEST_DIR = Path(__file__).parent / 'test_files'
 TEST_PATHWAY = TEST_DIR / 'test.pathway.sif'
 TEST_KERNEL = TEST_DIR / 'kernel.tab'

@@ -1,0 +1,75 @@
+{
+  "template": "/home/denes/pypath-new/_project_template",
+  "commit": "6b8b3efe33f9b69dad9be4bccb8f19b24098d780",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "tiedie",
+      "project_slug": "tiedie",
+      "package_name": "tiedie",
+      "short_description": "TieDIE: Tied Diffusion for Network Discovery",
+      "readme": "TieDIE: Tied Diffusion for Network Discovery",
+      "author_full_name": "Evan O. Paull",
+      "author_email": "epaull@soe.ucsc.edu",
+      "github_organization": "saezlab",
+      "project_repo": "https://github.com/saezlab/tiedie",
+      "license": "GNU General Public License Version 3",
+      "_license": {
+        "MIT License": {
+          "license_short": "MIT",
+          "license_classifiers": "MIT License",
+          "license_spdx": "MIT"
+        },
+        "BSD 2-Clause License": {
+          "license_short": "BSD-2-Clause",
+          "license_classifiers": "BSD License",
+          "license_spdx": "BSD-2-Clause"
+        },
+        "BSD 3-Clause License": {
+          "license_short": "BSD-3-Clause",
+          "license_classifiers": "BSD License",
+          "license_spdx": "BSD-3-Clause"
+        },
+        "Apache License Version 2.0": {
+          "license_short": "Apache-2.0",
+          "license_classifiers": "Apache Software License",
+          "license_spdx": "Apache-2.0"
+        },
+        "GNU General Public License Version 3": {
+          "license_short": "GPL-3.0-or-later",
+          "license_classifiers": "GNU General Public License v3 (GPLv3)",
+          "license_spdx": "GPL-3.0-or-later"
+        },
+        "GNU Lesser General Public License Version 3": {
+          "license_short": "LGPL-3.0-or-later",
+          "license_classifiers": "GNU Lesser General Public License v3 (LGPLv3)",
+          "license_spdx": "LGPL-3.0-or-later"
+        },
+        "ISC License": {
+          "license_short": "ISC",
+          "license_classifiers": "ISC License (ISCL)",
+          "license_spdx": "ISC"
+        },
+        "Unlicense": {
+          "license_short": "Unlicense",
+          "license_classifiers": "The Unlicense (Unlicense)",
+          "license_spdx": "Unlicense"
+        }
+      },
+      "python_version": "3.9",
+      "copyright_holder": "The Regents of the University of California",
+      "__year": "2026",
+      "_extensions": [
+        "cookiecutter.extensions.TimeExtension"
+      ],
+      "_copy_without_render": [
+        ".github/workflows/*.yml",
+        ".github/workflows/**.yaml",
+        ".github/actions/*"
+      ],
+      "_template": "/home/denes/pypath-new/_project_template",
+      "_commit": "6b8b3efe33f9b69dad9be4bccb8f19b24098d780"
+    }
+  },
+  "directory": null
+}

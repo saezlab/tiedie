@@ -2,6 +2,7 @@
 
 [![Tests](https://github.com/saezlab/tiedie/actions/workflows/ci-testing-unit.yml/badge.svg)](https://github.com/saezlab/tiedie/actions/workflows/ci-testing-unit.yml)
 [![Documentation](https://github.com/saezlab/tiedie/actions/workflows/ci-docs.yml/badge.svg)](https://github.com/saezlab/tiedie/actions/workflows/ci-docs.yml)
+[![GitHub release](https://img.shields.io/github/v/release/saezlab/tiedie)](https://github.com/saezlab/tiedie/releases)
 
 A network analysis algorithm that finds subnetworks connecting genomic
 perturbations to transcriptional changes in large gene interaction networks.

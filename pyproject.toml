@@ -9,8 +9,17 @@ requires = ["hatchling"]
 #=======       PROJECT      ========
 #===================================
 [project]
+name = "tiedie"
+version = "2.0.0"
+description = "TieDIE: Tied Diffusion for Network Discovery"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.9"
 authors = [
   {name = "Evan O. Paull", email="epaull@soe.ucsc.edu"},
+]
+maintainers = [
+    {name="Evan O. Paull", email="epaull@soe.ucsc.edu"},
 ]
 classifiers = [
     # How mature is this project? Common values are
@@ -34,18 +43,6 @@ dependencies = [
 
 [project.scripts]
 tiedie = "tiedie.cli:main"
-description = "TieDIE: Tied Diffusion for Network Discovery"
-license = "GPL-3.0-or-later"
-maintainers = [
-    {name="Evan O. Paull", email="epaull@soe.ucsc.edu"},
-]
-name = "tiedie"
-# packages = [
-#    { include = "tiedie" }
-# ]
-readme = "README.md"
-requires-python = ">=3.9"
-version = "2.0.0"
 
 [project.optional-dependencies]
 dev = [

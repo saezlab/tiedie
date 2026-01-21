@@ -1,10 +1,8 @@
 """Integration tests for TieDIE using GBM example data."""
 from pathlib import Path
 
-import pytest
-
 from tiedie import SciPYKernel
-from tiedie.util import parseHeats, parseNet, normalizeHeats, getNetworkNodes
+from tiedie.util import getNetworkNodes, normalizeHeats, parseHeats, parseNet
 
 TEST_DIR = Path(__file__).parent / 'test_files'
 GBM_PATHWAY = TEST_DIR / 'gbm_pathway.sif'
@@ -40,10 +38,9 @@ class TestGBMExample:
     def test_diffuse_heats(self) -> None:
         """Test heat diffusion on the GBM network."""
         upstream_heats, _ = parseHeats(str(GBM_UPSTREAM))
-        network_nodes = getNetworkNodes(parseNet(str(GBM_PATHWAY)))
 
-        # Normalize heats to network
-        normalized = normalizeHeats(upstream_heats, network_nodes)
+        # Normalize heats
+        normalized = normalizeHeats(upstream_heats)
 
         # Create kernel and diffuse
         diffuser = SciPYKernel(str(GBM_PATHWAY))
@@ -62,12 +59,10 @@ class TestGBMExample:
         """Test that bidirectional diffusion produces connecting nodes."""
         upstream_heats, _ = parseHeats(str(GBM_UPSTREAM))
         downstream_heats, _ = parseHeats(str(GBM_DOWNSTREAM))
-        network = parseNet(str(GBM_PATHWAY))
-        network_nodes = getNetworkNodes(network)
 
         # Normalize heats
-        upstream_norm = normalizeHeats(upstream_heats, network_nodes)
-        downstream_norm = normalizeHeats(downstream_heats, network_nodes)
+        upstream_norm = normalizeHeats(upstream_heats)
+        downstream_norm = normalizeHeats(downstream_heats)
 
         # Create kernel
         diffuser = SciPYKernel(str(GBM_PATHWAY))

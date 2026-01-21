@@ -3,10 +3,6 @@
 A network analysis algorithm that finds subnetworks connecting genomic
 perturbations to transcriptional changes in large gene interaction networks.
 
-## Version
-
-2.0.0
-
 ## Authors
 
 Evan O. Paull, Daniel Carlin and Joshua M. Stuart (UC Santa Cruz)
@@ -16,6 +12,7 @@ Evan O. Paull, Daniel Carlin and Joshua M. Stuart (UC Santa Cruz)
 - Srikanth Bezawada (TieDIE Cytoscape Plugin)
 - Josh L. Espinoza (Quick kernel loading feature)
 - Dana Silverbush (MATLAB kernel generation code updates)
+- Denes Turei (modern tooling and packaging)
 
 ## Requirements
 
@@ -218,7 +215,7 @@ mkdocs serve
 mkdocs build
 ```
 
-## Version 2.0.0 Notes
+## Version 2.0 Notes
 
 This version represents a major modernization of the TieDIE codebase:
 

@@ -1,7 +1,12 @@
 # TieDIE: Tied Diffusion for Subnetwork Discovery
 
+[![Tests](https://github.com/saezlab/tiedie/actions/workflows/ci-testing-unit.yml/badge.svg)](https://github.com/saezlab/tiedie/actions/workflows/ci-testing-unit.yml)
+[![Documentation](https://github.com/saezlab/tiedie/actions/workflows/ci-docs.yml/badge.svg)](https://github.com/saezlab/tiedie/actions/workflows/ci-docs.yml)
+
 A network analysis algorithm that finds subnetworks connecting genomic
 perturbations to transcriptional changes in large gene interaction networks.
+
+**[Documentation](https://saezlab.github.io/tiedie/)** | **[GitHub](https://github.com/saezlab/tiedie)**
 
 ## Authors
 

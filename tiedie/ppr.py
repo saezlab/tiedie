@@ -1,11 +1,11 @@
 import networkx as nx
 
 
-class PPrDiffuser:
+class PprDiffuser:
     """Personalized PageRank diffusion for network analysis."""
 
     def __init__(self, network):
-        """PPrDiffuser: object to perform the Personalized PageRank Algorithm
+        """PprDiffuser: object to perform the Personalized PageRank Algorithm
         This method creates the diffuser object from an networkx DiGraph() object,
         which can then be used to diffuse vectors over this
 

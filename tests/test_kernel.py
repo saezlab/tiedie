@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from tiedie import Kernel, SciPYKernel
+from tiedie import Kernel, ScipyKernel
 from tiedie.util import parse_heats
 
 
@@ -13,14 +13,14 @@ TEST_INPUT = TEST_DIR / 'upstream.input'
 TEST_DIFFUSED_SOLN = TEST_DIR / 'upstream.diffused'
 
 
-class TestSciPYKernel:
+class TestScipyKernel:
     """Tests for on-the-fly kernel diffusion with scipy."""
 
     def test_diffuse(self) -> None:
-        """Test that SciPYKernel diffusion produces valid output."""
+        """Test that ScipyKernel diffusion produces valid output."""
         input_heats, _ = parse_heats(str(TEST_INPUT))
 
-        diffuser = SciPYKernel(str(TEST_PATHWAY))
+        diffuser = ScipyKernel(str(TEST_PATHWAY))
         diffused = diffuser.diffuse(input_heats, reverse=False)
 
         # Verify diffusion produces results
@@ -38,7 +38,7 @@ class TestSciPYKernel:
         """Test reverse diffusion on the network."""
         input_heats, _ = parse_heats(str(TEST_INPUT))
 
-        diffuser = SciPYKernel(str(TEST_PATHWAY))
+        diffuser = ScipyKernel(str(TEST_PATHWAY))
         diffused = diffuser.diffuse(input_heats, reverse=True)
 
         assert len(diffused) > 0
@@ -70,7 +70,7 @@ class TestPrecomputedKernel:
         """Test that scipy and precomputed kernel produce similar results."""
         input_heats, _ = parse_heats(str(TEST_INPUT))
 
-        scipy_diffuser = SciPYKernel(str(TEST_PATHWAY))
+        scipy_diffuser = ScipyKernel(str(TEST_PATHWAY))
         kernel_diffuser = Kernel(str(TEST_KERNEL))
 
         scipy_diffused = scipy_diffuser.diffuse(input_heats, reverse=False)

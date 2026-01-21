@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from tiedie import SciPYKernel
+from tiedie import ScipyKernel
 from tiedie.util import (
     parse_net,
     parse_heats,
@@ -50,7 +50,7 @@ class TestGBMExample:
         normalized = normalize_heats(upstream_heats)
 
         # Create kernel and diffuse
-        diffuser = SciPYKernel(str(GBM_PATHWAY))
+        diffuser = ScipyKernel(str(GBM_PATHWAY))
         diffused = diffuser.diffuse(normalized, reverse=False)
 
         # Check that diffusion produces non-zero heats
@@ -72,7 +72,7 @@ class TestGBMExample:
         downstream_norm = normalize_heats(downstream_heats)
 
         # Create kernel
-        diffuser = SciPYKernel(str(GBM_PATHWAY))
+        diffuser = ScipyKernel(str(GBM_PATHWAY))
 
         # Diffuse from upstream (forward)
         up_diffused = diffuser.diffuse(upstream_norm, reverse=False)

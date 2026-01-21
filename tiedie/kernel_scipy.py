@@ -4,7 +4,7 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import expm
 
 
-class SciPYKernel:
+class ScipyKernel:
     """On-the-fly heat diffusion kernel using scipy matrix exponentiation."""
 
     def __init__(self, network_file):

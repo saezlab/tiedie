@@ -19,7 +19,7 @@ import os
 import sys
 import argparse
 
-from .ppr import PPrDiffuser
+from .ppr import PprDiffuser
 from .util import (
     run_pcst,
     write_el,
@@ -40,7 +40,7 @@ from .util import (
 from .kernel import Kernel
 from .permute import NetBalancedPermuter
 from .master_reg import ActivityScores
-from .kernel_scipy import SciPYKernel
+from .kernel_scipy import ScipyKernel
 
 
 def extract_subnetwork(
@@ -383,7 +383,7 @@ def main(args=None):
 
     # Create diffuser
     if opts.pagerank:
-        diffuser = PPrDiffuser(network)
+        diffuser = PprDiffuser(network)
     elif opts.kernel is not None:
         sys.stderr.write('Loading Heat Diffusion Kernel..\n')
         diffuser = Kernel(opts.kernel)
@@ -391,7 +391,7 @@ def main(args=None):
         sys.stderr.write(
             'Using SCIPY to compute the matrix exponential, t=0.1...\n'
         )
-        diffuser = SciPYKernel(opts.network)
+        diffuser = ScipyKernel(opts.network)
 
     # Validate kernel labels match network
     k_labels = diffuser.getLabels()

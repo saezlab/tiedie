@@ -1,81 +1,175 @@
-TieDIE: Tied Diffusion for Subnetwork Discovery. 
-========
+# TieDIE: Tied Diffusion for Subnetwork Discovery
 
-Current Version 
---------
+A network analysis algorithm that finds subnetworks connecting genomic
+perturbations to transcriptional changes in large gene interaction networks.
 
-1.0
-	
-Authors
---------
+## Version
 
-Evan O. Paull, Daniel Carlin and Joshua M. Stuart.
+2.0.0
 
-Additional Contributors
---------
+## Authors
 
-Srikanth Bezawada (TieDIE Cytoscape Plugin)
-Josh L. Espinoza (Quick kernel loading feature)
-Dana Silverbush (MATLAB kernel generation code updates to newer versions)
+Evan O. Paull, Daniel Carlin and Joshua M. Stuart (UC Santa Cruz)
 
-Requirements
---------
+### Additional Contributors
 
-Python 2.7 and the python numpy module are required to run the tiedie 
-executable, when using a pre-computed diffusion kernel. 
+- Srikanth Bezawada (TieDIE Cytoscape Plugin)
+- Josh L. Espinoza (Quick kernel loading feature)
+- Dana Silverbush (MATLAB kernel generation code updates)
 
-Either MATLAB or the python scipy module, version 0.12 or later, is 
-required for diffusion kernel computation: the latter is free, though
-not as computationally efficient as the MATLAB implementation.
+## Requirements
 
-* [python 2.7](http://www.python.org/): all modules.
-   * [scipy](http://www.scipy.org/): >= 0.12.0 kernel generation
-   * [numpy](http://numpy.scipy.org/)
-   * [networkx](http://networkx.github.io/)
-* [MATLAB](http://www.mathworks.com/products/matlab/): kernel generation
+- Python >= 3.9
+- numpy >= 1.20
+- scipy >= 1.0
+- networkx >= 2.0
 
-Installation
--------
+## Installation
 
-- Install dependencies
-- Download the TieDIE repository to the desired location
-- (Recommended) Pre-Generate kernel file with MATLAB (bin/makeKernel.sh)
-- Run TieDIE/bin/tiedie
+### Using pip (from GitHub)
 
-Examples
--------
-- **GBM.test** An example signaling network from Glioblastoma (TCGA Network, 2012) is provided, along with input heats 
-for an upstream set of genes (mutated genes) and a downstream set of nodes (transcriptional responses). To run:
+```bash
+pip install git+https://github.com/saezlab/tiedie.git
+```
 
-	cd examples/GBM.test
-	make
+### Using uv (recommended)
 
-A tutorial for this simple example is provided in doc/Tutorial.pdf. 
+[uv](https://docs.astral.sh/uv/) is a fast Python package manager. To install TieDIE with uv:
 
-Programs
--------
+```bash
+# Install uv if you don't have it
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-- **tiedie** Python executable to run the TieDIE algorithm. 
-- **makeKernel.sh** Shell script executable that calls MATLAB for diffusion kernel file generation.
-- (Auxillary) **span.R** An R-implementation of the Prize Collecting Steiner Tree network formulation, that calls 
-the BioNet package. 
+# Create a new project with TieDIE
+uv init my-project
+cd my-project
+uv add git+https://github.com/saezlab/tiedie.git
 
-Folders
-------
-* bin : executables and matlab source files
-* lib : python code libraries for the tiedie executable
-* test : doctest unit tests, functional tests and regression tests
-* examples : GBM and BRCA inputs for demonstration purposes
-* galaxy : Galaxy web-server wrapper for tiedie to run through the web interface. (https://main.g2.bx.psu.edu/)
-* pathways : the "superpathway" described in the TieDIE paper, used with the TCGA BRCA dataset
+# Or add to an existing project
+uv add git+https://github.com/saezlab/tiedie.git
+```
 
-In Press
-------
-TieDIE was first featured in the 2013 Nature paper "Comprehensive molecular characterization of clear cell renal cell carcinoma". In this TCGA (The Cancer Genome Atlas) network publication, a TieDIE analysis was used to connnect frequently mutated genes involving the SWI/SNF chromatin remodelling complex to a diverse set of gene expression changes characteristic of tumor development and progression. The TieDIE manuscript was not yet published at the time of the Nature publication and so is cited by name and author only. The TieDIE network solution is shown in figure 4 of the main text, which can be found at this link: http://www.nature.com/nature/journal/v499/n7456/full/nature12222.html . 
+### Development installation
 
+```bash
+git clone https://github.com/saezlab/tiedie.git
+cd tiedie
 
+# Using uv (recommended)
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[tests]"
 
-Contact
-------
-Feature requests, comments and requests for clarification should all be sent to the author at <epaull@soe.ucsc.edu>. 
-I will try to respond quickly to all requests, so feel free to email me!
+# Or using pip
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[tests]"
+```
+
+## Usage
+
+### Command Line Interface
+
+```bash
+tiedie -n pathway.sif -u upstream.input -d downstream.input
+```
+
+For full options:
+
+```bash
+tiedie --help
+```
+
+### Python API
+
+```python
+from tiedie import SciPYKernel
+from tiedie.util import parseHeats, parseNet, normalizeHeats
+
+# Parse input files
+network = parseNet('pathway.sif')
+upstream_heats, upstream_signs = parseHeats('upstream.input')
+downstream_heats, downstream_signs = parseHeats('downstream.input')
+
+# Normalize heats
+upstream_norm = normalizeHeats(upstream_heats)
+downstream_norm = normalizeHeats(downstream_heats)
+
+# Create diffusion kernel and run diffusion
+diffuser = SciPYKernel('pathway.sif')
+up_diffused = diffuser.diffuse(upstream_norm, reverse=False)
+down_diffused = diffuser.diffuse(downstream_norm, reverse=True)
+```
+
+## Input File Formats
+
+### Network file (.sif)
+
+Tab-separated: `source \t interaction \t target`
+
+```
+GeneA	-a>	GeneB
+GeneB	-t|	GeneC
+```
+
+Interaction types:
+- `-a>` : activation
+- `-t|` : inhibition
+- `-component>` : component relationship
+
+### Heat file (.input)
+
+Tab-separated: `gene \t heat \t sign`
+
+```
+GeneA	10.5	+
+GeneB	8.2	-
+```
+
+## Project Structure
+
+```
+tiedie/
+├── __init__.py      # Public API
+├── cli.py           # Command-line interface
+├── kernel.py        # Pre-computed kernel diffusion
+├── kernel_scipy.py  # On-the-fly kernel generation (scipy)
+├── ppr.py           # Personalized PageRank diffusion
+├── permute.py       # Permutation testing
+├── util.py          # Utility functions
+└── ...
+tests/               # Test suite
+docs/                # Documentation (Tutorial.pdf, FAQ.txt)
+```
+
+## Publications
+
+TieDIE was first featured in the 2013 Nature paper "Comprehensive molecular
+characterization of clear cell renal cell carcinoma" (TCGA Network). In this
+publication, TieDIE analysis connected frequently mutated genes involving the
+SWI/SNF chromatin remodelling complex to gene expression changes characteristic
+of tumor development and progression. The TieDIE network solution is shown in
+Figure 4: http://www.nature.com/nature/journal/v499/n7456/full/nature12222.html
+
+## License
+
+GPL-3.0-or-later
+
+## Contact
+
+Feature requests, comments and requests for clarification should be sent to
+<epaull@soe.ucsc.edu>.
+
+## Version 2.0.0 Notes
+
+This version represents a major modernization of the TieDIE codebase:
+
+- **Python 3 compatibility**: Ported from Python 2.7 to Python 3.9+
+- **Modern packaging**: Converted to a proper Python package with `pyproject.toml`
+  and hatchling build backend
+- **Test suite**: Added pytest-based test suite with integration tests
+- **uv support**: Compatible with modern Python tooling including uv
+- **CLI improvements**: Migrated from optparse to argparse
+
+This modernization was done at [Saez Lab](https://saezlab.org/) by
+Dénes Türei (<turei.denes@gmail.com>).

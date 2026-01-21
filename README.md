@@ -160,6 +160,64 @@ GPL-3.0-or-later
 Feature requests, comments and requests for clarification should be sent to
 <epaull@soe.ucsc.edu>.
 
+## Development
+
+### Running tests
+
+```bash
+# Install test dependencies
+uv pip install -e ".[tests]"
+
+# Run tests
+pytest
+
+# Run tests with coverage
+pytest --cov=tiedie
+```
+
+### Linting and formatting
+
+The project uses [ruff](https://docs.astral.sh/ruff/) for linting and formatting:
+
+```bash
+# Check for issues
+ruff check .
+
+# Auto-fix issues
+ruff check --fix .
+
+# Format code
+ruff format .
+```
+
+### Pre-commit hooks
+
+[Pre-commit](https://pre-commit.com/) hooks are configured for automated checks:
+
+```bash
+# Install pre-commit hooks
+uv pip install -e ".[dev]"
+pre-commit install
+
+# Run hooks manually on all files
+pre-commit run --all-files
+```
+
+### Building documentation
+
+Documentation is built with [MkDocs](https://www.mkdocs.org/):
+
+```bash
+# Install docs dependencies
+uv pip install -e ".[docs]"
+
+# Serve docs locally
+mkdocs serve
+
+# Build static docs
+mkdocs build
+```
+
 ## Version 2.0.0 Notes
 
 This version represents a major modernization of the TieDIE codebase:

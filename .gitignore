@@ -21,3 +21,4 @@ __pycache__/
 /.pytest_cache/
 /.cache/
 /data/
+site/

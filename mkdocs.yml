@@ -1,5 +1,7 @@
-site_name: 'tiedie'
+site_name: 'TieDIE'
 site_url: https://saezlab.github.io/tiedie
+site_description: 'TieDIE: Tied Diffusion for Subnetwork Discovery'
+
 theme:
     name: material
     font:
@@ -7,8 +9,6 @@ theme:
         code: Roboto Mono
     features:
     -   content.code.copy
-    -   content.action.edit
-    -   navigation.tabs
     -   navigation.instant
     -   navigation.footer
     palette:
@@ -25,52 +25,19 @@ theme:
             icon: material/toggle-switch-off
             name: Switch to light mode
 
-#=======    Website Navigation settings   =====
 nav:
 -   Home: index.md
+-   API Reference: reference/api.md
 
--   About:
-    -   Project: 'tiedie-project/project.md'
-    -   Design philosophy: 'tiedie-project/design-philosophy.md'
-    -   Use Cases: 'tiedie-project/use-cases.md'
-    -   About: about.md
-
--   Get Started:
-    -   Installation: installation.md
-    -   Quickstart: learn/tutorials/quickstart.md
-
--   Learn:
-    -   Tutorials:
-        -   Basics: learn/tutorials/tutorial0001_basics.md
-        -   HowTo / FAQ:
-            -   learn/guides/index.md
-
--   Explanations:
-    -   learn/explanation/index.md
-
--   Reference:
-    -   API Documentation:
-        -   'tiedie':
-            -   _metadata: reference/source/tiedie/_metadata-docs.md
--   Community:
-    -   Join Us: community/index.md
-    -   Where to Start: community/contribute.md
-    -   Contribute to the Documentation: community/contribute-docs.md
-    -   Contribute to the Code Base: community/contribute-codebase.md
-
-
-
-#=======    Extension settings (sorted alphabetically)  =====
 markdown_extensions:
 -   admonition
 -   attr_list
 -   md_in_html
-  #----- Python Markdown Extensions
 -   pymdownx.details
 -   pymdownx.emoji:
         emoji_index: !!python/name:material.extensions.emoji.twemoji
         emoji_generator: !!python/name:material.extensions.emoji.to_svg
--   pymdownx.highlight: # Note: list of Pygments: https://pygments.org/docs/lexers/
+-   pymdownx.highlight:
         anchor_linenums: true
         line_spans: __span
         pygments_lang_class: true
@@ -84,7 +51,6 @@ markdown_extensions:
 -   pymdownx.tabbed:
         alternate_style: true
 
-#=======    Plugins    =====
 plugins:
 -   search
 -   mkdocstrings:
@@ -103,5 +69,4 @@ plugins:
                     show_signature_annotations: false
                     signature_crossrefs: true
 
-
-copyright: © Copyright 2021-2025, Saez-lab development team.
+copyright: © 2013-2026 Evan O. Paull, Joshua M. Stuart (UC Santa Cruz); Dénes Türei (Saez Lab, Heidelberg University).

@@ -1,5 +1,6 @@
 import networkx as nx
 
+
 class PPrDiffuser:
     """Personalized PageRank diffusion for network analysis."""
 

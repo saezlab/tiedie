@@ -42,6 +42,7 @@ from .permute import NetBalancedPermuter
 from .master_reg import ActivityScores
 from .kernel_scipy import SciPYKernel
 
+
 def extract_subnetwork(
     up_heats,
     down_heats,

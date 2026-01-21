@@ -3,6 +3,7 @@ import operator
 
 from .util import connectedSubnets, mapUGraphToNetwork
 
+
 def min(vals):
     """Get minimum value from a list."""
     min = vals[0]

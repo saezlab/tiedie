@@ -1,5 +1,6 @@
 from numpy import dot, genfromtxt
 
+
 class Kernel:
     """Pre-computed heat diffusion kernel for network analysis."""
 

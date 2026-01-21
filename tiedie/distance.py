@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class ProbDistance:
     """
     Holds functions for various distance metrics between probability vectors

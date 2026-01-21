@@ -4,6 +4,7 @@ import pytest
 
 from tiedie.util import parseNet, parseHeats, normalizeHeats, getNetworkNodes
 
+
 class TestUtilFunctions:
     """Tests for utility parsing and normalization functions."""
 

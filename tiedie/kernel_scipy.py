@@ -3,6 +3,7 @@ from array import array
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import expm
 
+
 class SciPYKernel:
     """On-the-fly heat diffusion kernel using scipy matrix exponentiation."""
 

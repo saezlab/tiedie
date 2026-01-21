@@ -6,6 +6,7 @@ from scipy import stats
 
 from .util import parseHeats, classifyInteraction
 
+
 class ActivityScores:
     """Uses the supplied pathway to find"""
 

@@ -1,6 +1,7 @@
 from copy import copy
 from random import shuffle
 
+
 class NetBalancedPermuter:
     """Encapsulates the permutation logic for an input heat set. Permutes
     Node scores with other nodes of similar network degree by sorting

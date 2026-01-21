@@ -21,21 +21,21 @@ import argparse
 
 from .ppr import PPrDiffuser
 from .util import (
-    runPCST,
-    writeEL,
-    parseNet,
-    searchDFS,
-    parseHeats,
-    writeNAfile,
-    writeNetwork,
-    classifyState,
-    filterLinkers,
-    getOutDegrees,
-    normalizeHeats,
-    getNetworkNodes,
-    connectedSubnets,
-    findLinkerCutoff,
-    mapUGraphToNetwork,
+    run_pcst,
+    write_el,
+    parse_net,
+    search_dfs,
+    parse_heats,
+    write_na_file,
+    write_network,
+    classify_state,
+    filter_linkers,
+    get_out_degrees,
+    normalize_heats,
+    connected_subnets,
+    get_network_nodes,
+    find_linker_cutoff,
+    map_ugraph_to_network,
 )
 from .kernel import Kernel
 from .permute import NetBalancedPermuter
@@ -79,7 +79,7 @@ def extract_subnetwork(
         alpha_score = None
         linker_cutoff = float(set_alpha)
     else:
-        linker_cutoff, alpha_score = findLinkerCutoff(
+        linker_cutoff, alpha_score = find_linker_cutoff(
             up_heats,
             down_heats,
             up_heats_diffused,
@@ -87,7 +87,7 @@ def extract_subnetwork(
             size_control,
         )
 
-    linker_nodes, linker_scores = filterLinkers(
+    linker_nodes, linker_scores = filter_linkers(
         up_heats_diffused,
         down_heats_diffused,
         linker_cutoff,
@@ -96,10 +96,10 @@ def extract_subnetwork(
     ugraph = None
 
     if use_pcst:
-        ugraph = runPCST(up_heats, down_heats, linker_nodes, network_file)
+        ugraph = run_pcst(up_heats, down_heats, linker_nodes, network_file)
     else:
         nodes = set(up_heats).union(set(down_heats)).union(set(linker_nodes))
-        ugraph = connectedSubnets(network, nodes)
+        ugraph = connected_subnets(network, nodes)
 
     if len(ugraph) == 0:
         sys.stderr.write(
@@ -107,7 +107,7 @@ def extract_subnetwork(
         )
         return (None, None, None, None)
 
-    subnet_soln = mapUGraphToNetwork(ugraph, network)
+    subnet_soln = map_ugraph_to_network(ugraph, network)
 
     subnet_soln_nodes = set()
 
@@ -143,7 +143,7 @@ def find_consistent_paths(
         Tuple of (TP count, FP count, validated edge list)
     """
 
-    gene_states, t_states = classifyState(up_signs, down_signs)
+    gene_states, t_states = classify_state(up_signs, down_signs)
     validated = set()
     down_set = set(down_signs.keys())
     TP = 0
@@ -155,7 +155,7 @@ def find_consistent_paths(
         truePaths = []
         edges_this_source = set()
 
-        searchDFS(
+        search_dfs(
             source,
             action,
             edges_this_source,
@@ -181,14 +181,14 @@ def find_consistent_paths(
             sys.stderr.write(
                 'Writing Single Causal Neighborhood to ' + out_file + '\n'
             )
-            writeEL(edges_this_source, source, down_set, out_file)
+            write_el(edges_this_source, source, down_set, out_file)
 
     if output:
         out_file = output_folder + '/tiedie.cn.sif'
         sys.stderr.write(
             'Writing Full Causal Neighborhood to ' + out_file + '\n'
         )
-        writeEL(validated, 'ALL', down_set, out_file)
+        write_el(validated, 'ALL', down_set, out_file)
 
     return (TP, FP, validated)
 
@@ -343,12 +343,12 @@ def main(args=None):
 
     # Parse network
     sys.stderr.write('Parsing Network File..\n')
-    network = parseNet(opts.network)
-    network_nodes = getNetworkNodes(network)
+    network = parse_net(opts.network)
+    network_nodes = get_network_nodes(network)
 
     # Parse upstream heats
-    up_heats, up_signs = parseHeats(opts.up_heats, network_nodes)
-    up_heats = normalizeHeats(up_heats)
+    up_heats, up_signs = parse_heats(opts.up_heats, network_nodes)
+    up_heats = normalize_heats(up_heats)
 
     # Parse or compute downstream heats
     down_heats = None
@@ -371,9 +371,9 @@ def main(args=None):
             down_heats[g] = abs(h)
 
     else:
-        down_heats, down_signs = parseHeats(opts.down_heats, network_nodes)
+        down_heats, down_signs = parse_heats(opts.down_heats, network_nodes)
 
-    down_heats = normalizeHeats(down_heats)
+    down_heats = normalize_heats(down_heats)
 
     # Create output folder
     output_folder = opts.output_folder
@@ -426,7 +426,7 @@ def main(args=None):
     )
 
     # Generate linker stats
-    out_degrees = getOutDegrees(subnet_soln)
+    out_degrees = get_out_degrees(subnet_soln)
     sys.stderr.write(
         'Writing network node stats to ' + output_folder + '/node.stats\n'
     )
@@ -457,12 +457,12 @@ def main(args=None):
             )
 
     # Write Cytoscape files
-    writeNAfile(output_folder + '/node_types.NA', node_types, 'NodeTypes')
-    writeNAfile(output_folder + '/heats.NA', linker_scores, 'LinkerHeats')
+    write_na_file(output_folder + '/node_types.NA', node_types, 'NodeTypes')
+    write_na_file(output_folder + '/heats.NA', linker_scores, 'LinkerHeats')
 
     # Write network
     sys.stderr.write('Writing ' + output_folder + '/tiedie.sif result\n')
-    writeNetwork(subnet_soln, output_folder + '/tiedie.sif')
+    write_network(subnet_soln, output_folder + '/tiedie.sif')
 
     # Find consistent paths
     TP, FP, validated = find_consistent_paths(
@@ -495,7 +495,7 @@ def main(args=None):
 
         for heats in permutedHeats:
             diffused_heats = diffuser.diffuse(heats)
-            cutoff, perm_score = findLinkerCutoff(
+            cutoff, perm_score = find_linker_cutoff(
                 heats,
                 down_heats,
                 diffused_heats,

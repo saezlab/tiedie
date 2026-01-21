@@ -4,7 +4,7 @@ import operator
 import numpy as np
 from scipy import stats
 
-from .util import parseHeats, classifyInteraction
+from .util import parse_heats, classify_interaction
 
 
 class ActivityScores:
@@ -26,7 +26,7 @@ class ActivityScores:
             positive_regulon = set()
             negative_regulon = set()
             for i, t in network[source]:
-                type, mode = classifyInteraction(i)
+                type, mode = classify_interaction(i)
                 # only consider transcriptional regulation
                 if mode != 't':
                     continue
@@ -39,10 +39,10 @@ class ActivityScores:
             if (len(positive_regulon) + len(negative_regulon)) >= min_hub:
                 self.candidates[source] = (positive_regulon, negative_regulon)
 
-        self.generateRankings(scores)
+        self.generate_rankings(scores)
 
     @staticmethod
-    def getEnrichmentScore(network, scores, test_set, nperms=1000):
+    def get_enrichment_score(network, scores, test_set, nperms=1000):
         """Calculate enrichment score with permutation-based p-value."""
         mrObj = ActivityScores(network, scores, min_hub=10)
 
@@ -54,12 +54,12 @@ class ActivityScores:
                 network_nodes.add(t)
 
         # generate GSEA score
-        score = mrObj.scoreReg(test_set, set())
+        score = mrObj.score_reg(test_set, set())
         # perform random permutations, get background scores
         no_gte = 0.0
         for i in range(0, nperms):
             permuted_set = random.sample(network_nodes, len(test_set))
-            p_score = mrObj.scoreReg(permuted_set, set())
+            p_score = mrObj.score_reg(permuted_set, set())
             if p_score >= score:
                 no_gte += 1.0
 
@@ -67,7 +67,7 @@ class ActivityScores:
         return (score, pval)
 
     @staticmethod
-    def findRegulators(network, de_file, min_hub=10, nperms=1000):
+    def find_regulators(network, de_file, min_hub=10, nperms=1000):
         """Input:
             file with differential expression (or otherwise scored) values
 
@@ -75,10 +75,10 @@ class ActivityScores:
             A hash of master regulators, with signed, weighted scores normalized
             so that absolute values sum to 1.
         """
-        scores, signs = parseHeats(de_file)
+        scores, signs = parse_heats(de_file)
         mrObj = ActivityScores(network, scores, min_hub=min_hub)
         # perform 1000 random permutations of the data to get significance scores for each
-        results = mrObj.scoreCandidates(nperms)
+        results = mrObj.score_candidates(nperms)
         tfs_heats = {}
         for tf, score_pval in sorted(results.items(), key=lambda t: t[1][0]):
             print(score_pval)
@@ -103,7 +103,7 @@ class ActivityScores:
         return tfs_heats
 
     @staticmethod
-    def getPval(real, background):
+    def get_pval(real, background):
         """Calculate empirical p-value from background distribution."""
         count = 0.0
         empirical_pval = None
@@ -126,21 +126,21 @@ class ActivityScores:
 
         return empirical_pval
 
-    def scoreCandidates(self, threshold=0.05, nperms=1000):
+    def score_candidates(self, threshold=0.05, nperms=1000):
         """Score all candidate regulators with permutation testing."""
         scores = {}
         for c in self.candidates:
             pos, neg = self.candidates[c]
-            score = self.scoreReg(pos, neg)
-            bg = self.generateBackground(c, nperms)
-            pval = ActivityScores.getPval(score, bg)
+            score = self.score_reg(pos, neg)
+            bg = self.generate_background(c, nperms)
+            pval = ActivityScores.get_pval(score, bg)
             # filter first by p-value, then weight by the score
             if pval < threshold:
                 scores[c] = (score, pval)
 
         return scores
 
-    def generateBackground(self, candidate, nperms):
+    def generate_background(self, candidate, nperms):
         """Generate background score distribution via random sampling."""
         pos, neg = self.candidates[candidate]
         # sample of this set size
@@ -149,12 +149,12 @@ class ActivityScores:
         for i in range(0, nperms):
             sampled_pos = set(random.sample(self.gene_list, len(pos)))
             sampled_neg = set(random.sample(self.gene_list, len(neg)))
-            score = self.scoreReg(sampled_pos, sampled_neg)
+            score = self.score_reg(sampled_pos, sampled_neg)
             background_scores.append(score)
 
         return background_scores
 
-    def generateRankings(self, scores):
+    def generate_rankings(self, scores):
         """scores: scores of differential gene expression. These canonically are
         d-statistic values output from Significance of Microarrays (SAM, Tishirani 2003).
         Input as a hash-map.
@@ -225,7 +225,7 @@ class ActivityScores:
         self.scores = R_c_SCORES
         self.list = R_c
 
-    def scoreCHISQ(self, pos_query_set, neg_query_set):
+    def score_chisq(self, pos_query_set, neg_query_set):
         """Use chisquare approximation to fisher's exact test
         to calculate p-values for each
         """
@@ -253,7 +253,7 @@ class ActivityScores:
         combined_p = UP_pval * DOWN_pval
         return combined_p
 
-    def scoreReg(self, pos_query_set, neg_query_set):
+    def score_reg(self, pos_query_set, neg_query_set):
         """Compute enrichment score for regulon sets (Lim et al., 2009 PSB)."""
         # from Lim et al., 2009 PSB
         rs_const = float(

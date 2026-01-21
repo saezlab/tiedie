@@ -8,7 +8,7 @@ class ProbDistance:
     """
 
     @staticmethod
-    def getSymmetricMeasure(v1, v2, measure='kl_div', symmetric=True):
+    def get_symmetric_measure(v1, v2, measure='kl_div', symmetric=True):
         """
         Inputs:
             v1: first hash-key/value probability vector
@@ -23,23 +23,23 @@ class ProbDistance:
         no immediate plans for future measures
         """
         if measure == 'kl_div' and symmetric:
-            return ProbDistance.getSYMKLDiv(v1, v2)
+            return ProbDistance.get_sym_kl_div(v1, v2)
         elif measure == 'kl_div' and not symmetric:
-            return ProbDistance.getKLDiv(v1, v2)
+            return ProbDistance.get_kl_div(v1, v2)
         else:
             raise Exception('Error, method ' + measure + ' not yet implemented')
 
     @staticmethod
-    def getSYMKLDiv(v1, v2):
+    def get_sym_kl_div(v1, v2):
         """
         <Development module> Get the symmetric Kullback-Leibler divergence between input vectors.
         """
         return (
-            ProbDistance.getKLDiv(v1, v2) + ProbDistance.getKLDiv(v2, v1)
+            ProbDistance.get_kl_div(v1, v2) + ProbDistance.get_kl_div(v2, v1)
         ) / 2
 
     @staticmethod
-    def getKLDiv(v1, v2):
+    def get_kl_div(v1, v2):
         """
         <Development module> Get the Kullback-Leibler divergence between input vectors,
         which typically represent diffused heat values.

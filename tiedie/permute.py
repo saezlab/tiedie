@@ -48,7 +48,7 @@ class NetBalancedPermuter:
             self.degrees.items(), key=lambda x: x[1], reverse=True
         )
 
-    def permuteBlock(self, block):
+    def permute_block(self, block):
         """Take a block of nodes and randomly shuffle using python's random.shuffle method.
 
         Input:
@@ -70,7 +70,7 @@ class NetBalancedPermuter:
 
         return map
 
-    def permuteOne(self):
+    def permute_one(self):
         """Generate one permutation of scores for all nodes, and return a hash of { node : score }
         for each.
         """
@@ -84,7 +84,7 @@ class NetBalancedPermuter:
             # reset every time we use the block size
             if group_count % self.block_size == 0:
                 # permute the order of this <block_size> block
-                map = self.permuteBlock(block)
+                map = self.permute_block(block)
                 for node, score in self.scores:
                     if node in map:
                         permuted_scores[map[node]] = float(score)
@@ -103,6 +103,6 @@ class NetBalancedPermuter:
         """
         permuted = []
         for i in range(0, iterations):
-            permuted.append(self.permuteOne())
+            permuted.append(self.permute_one())
 
         return permuted

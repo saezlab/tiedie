@@ -24,7 +24,7 @@ class SciPYKernel:
         self.nrows = {}
 
         # parse the network, build indexes
-        edges, nodes, node_out_degrees = self.parseNet(network_file)
+        edges, nodes, node_out_degrees = self.parse_net(network_file)
         num_nodes = len(nodes)
         node_order = list(nodes)
         index2node = {}
@@ -79,9 +79,9 @@ class SciPYKernel:
         self.kernel = expm(time_T * L)
         self.labels = node_order
 
-        # self.printLaplacian()
+        # self.print_laplacian()
 
-    def getLabels(self):
+    def get_labels(self):
         """Return the set of all node/gene labels used by this kernel object"""
         # all_labels = set()
         # for label in self.labels:
@@ -89,7 +89,7 @@ class SciPYKernel:
 
         return all_labels
 
-    def printLaplacian(self):
+    def print_laplacian(self):
         """Debug function"""
         cx = self.laplacian.tocoo()
         for i, j, v in zip(cx.row, cx.col, cx.data):
@@ -97,7 +97,7 @@ class SciPYKernel:
             b = self.index2node[j]
             print('\t'.join([a, b, str(v)]))
 
-    def parseNet(self, network):
+    def parse_net(self, network):
         """Parse .sif network, using just the first and third columns
         to build an undirected graph. Store the node out-degrees
         in an index while we're at it.
@@ -129,7 +129,7 @@ class SciPYKernel:
 
         return (edges, nodes, degrees)
 
-    def kernelMultiplyOne(self, vector):
+    def kernel_multiply_one(self, vector):
         """Multiply the specified kernel by the supplied input heat vector.
 
         Input:
@@ -175,6 +175,6 @@ class SciPYKernel:
             Diffused heat vector
         """
 
-        diffused_vector = self.kernelMultiplyOne(vector)
+        diffused_vector = self.kernel_multiply_one(vector)
 
         return diffused_vector

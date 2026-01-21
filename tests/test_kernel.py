@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from tiedie import Kernel, SciPYKernel
-from tiedie.util import parseHeats
+from tiedie.util import parse_heats
 
 
 TEST_DIR = Path(__file__).parent / 'test_files'
@@ -18,7 +18,7 @@ class TestSciPYKernel:
 
     def test_diffuse(self) -> None:
         """Test that SciPYKernel diffusion produces valid output."""
-        input_heats, _ = parseHeats(str(TEST_INPUT))
+        input_heats, _ = parse_heats(str(TEST_INPUT))
 
         diffuser = SciPYKernel(str(TEST_PATHWAY))
         diffused = diffuser.diffuse(input_heats, reverse=False)
@@ -36,7 +36,7 @@ class TestSciPYKernel:
 
     def test_diffuse_reverse(self) -> None:
         """Test reverse diffusion on the network."""
-        input_heats, _ = parseHeats(str(TEST_INPUT))
+        input_heats, _ = parse_heats(str(TEST_INPUT))
 
         diffuser = SciPYKernel(str(TEST_PATHWAY))
         diffused = diffuser.diffuse(input_heats, reverse=True)
@@ -50,7 +50,7 @@ class TestPrecomputedKernel:
 
     def test_diffuse(self) -> None:
         """Test that pre-computed kernel diffusion produces valid output."""
-        input_heats, _ = parseHeats(str(TEST_INPUT))
+        input_heats, _ = parse_heats(str(TEST_INPUT))
 
         diffuser = Kernel(str(TEST_KERNEL))
         diffused = diffuser.diffuse(input_heats, reverse=False)
@@ -68,7 +68,7 @@ class TestPrecomputedKernel:
 
     def test_kernel_consistency(self) -> None:
         """Test that scipy and precomputed kernel produce similar results."""
-        input_heats, _ = parseHeats(str(TEST_INPUT))
+        input_heats, _ = parse_heats(str(TEST_INPUT))
 
         scipy_diffuser = SciPYKernel(str(TEST_PATHWAY))
         kernel_diffuser = Kernel(str(TEST_KERNEL))

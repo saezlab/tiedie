@@ -6,14 +6,14 @@ perturbations to transcriptional changes in large gene interaction networks.
 
 from .ppr import PPrDiffuser
 from .util import (
-    parseNet,
-    parseHeats,
-    filterLinkers,
-    normalizeHeats,
-    getNetworkNodes,
-    connectedSubnets,
-    findLinkerCutoff,
-    mapUGraphToNetwork,
+    parse_net,
+    parse_heats,
+    filter_linkers,
+    normalize_heats,
+    connected_subnets,
+    get_network_nodes,
+    find_linker_cutoff,
+    map_ugraph_to_network,
 )
 from .kernel import Kernel
 from .permute import NetBalancedPermuter
@@ -29,12 +29,12 @@ __all__ = [
     'SciPYKernel',
     'PPrDiffuser',
     'NetBalancedPermuter',
-    'parseHeats',
-    'parseNet',
-    'normalizeHeats',
-    'getNetworkNodes',
-    'filterLinkers',
-    'findLinkerCutoff',
-    'connectedSubnets',
-    'mapUGraphToNetwork',
+    'parse_heats',
+    'parse_net',
+    'normalize_heats',
+    'get_network_nodes',
+    'filter_linkers',
+    'find_linker_cutoff',
+    'connected_subnets',
+    'map_ugraph_to_network',
 ]

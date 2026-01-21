@@ -3,7 +3,12 @@
 from pathlib import Path
 
 from tiedie import SciPYKernel
-from tiedie.util import parseNet, parseHeats, normalizeHeats, getNetworkNodes
+from tiedie.util import (
+    parse_net,
+    parse_heats,
+    normalize_heats,
+    get_network_nodes,
+)
 
 
 TEST_DIR = Path(__file__).parent / 'test_files'
@@ -17,19 +22,19 @@ class TestGBMExample:
 
     def test_parse_network(self) -> None:
         """Test parsing the GBM pathway network."""
-        network = parseNet(str(GBM_PATHWAY))
+        network = parse_net(str(GBM_PATHWAY))
 
         assert len(network) > 0
         # Check that known nodes are present
-        nodes = getNetworkNodes(network)
+        nodes = get_network_nodes(network)
         assert 'PIK3CA' in nodes
         assert 'PTEN' in nodes
         assert 'AKT1' in nodes
 
     def test_parse_heats(self) -> None:
         """Test parsing upstream and downstream heat inputs."""
-        upstream_heats, upstream_signs = parseHeats(str(GBM_UPSTREAM))
-        downstream_heats, downstream_signs = parseHeats(str(GBM_DOWNSTREAM))
+        upstream_heats, upstream_signs = parse_heats(str(GBM_UPSTREAM))
+        downstream_heats, downstream_signs = parse_heats(str(GBM_DOWNSTREAM))
 
         assert len(upstream_heats) > 0
         assert len(downstream_heats) > 0
@@ -39,10 +44,10 @@ class TestGBMExample:
 
     def test_diffuse_heats(self) -> None:
         """Test heat diffusion on the GBM network."""
-        upstream_heats, _ = parseHeats(str(GBM_UPSTREAM))
+        upstream_heats, _ = parse_heats(str(GBM_UPSTREAM))
 
         # Normalize heats
-        normalized = normalizeHeats(upstream_heats)
+        normalized = normalize_heats(upstream_heats)
 
         # Create kernel and diffuse
         diffuser = SciPYKernel(str(GBM_PATHWAY))
@@ -59,12 +64,12 @@ class TestGBMExample:
 
     def test_bidirectional_diffusion(self) -> None:
         """Test that bidirectional diffusion produces connecting nodes."""
-        upstream_heats, _ = parseHeats(str(GBM_UPSTREAM))
-        downstream_heats, _ = parseHeats(str(GBM_DOWNSTREAM))
+        upstream_heats, _ = parse_heats(str(GBM_UPSTREAM))
+        downstream_heats, _ = parse_heats(str(GBM_DOWNSTREAM))
 
         # Normalize heats
-        upstream_norm = normalizeHeats(upstream_heats)
-        downstream_norm = normalizeHeats(downstream_heats)
+        upstream_norm = normalize_heats(upstream_heats)
+        downstream_norm = normalize_heats(downstream_heats)
 
         # Create kernel
         diffuser = SciPYKernel(str(GBM_PATHWAY))

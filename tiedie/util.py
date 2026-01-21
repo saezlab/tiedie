@@ -19,7 +19,7 @@ def _report_linker_cutoff_errors():
     """Report total linker cutoff errors at exit."""
     if _linker_cutoff_error_count > 1:
         warnings.warn(
-            f'findLinkerCutoff failed {_linker_cutoff_error_count} '
+            f'find_linker_cutoff failed {_linker_cutoff_error_count} '
             'times total during execution',
             stacklevel=1,
         )
@@ -28,7 +28,7 @@ def _report_linker_cutoff_errors():
 atexit.register(_report_linker_cutoff_errors)
 
 
-def parseHeats(file, network_nodes=None):
+def parse_heats(file, network_nodes=None):
     """Parse input heats file in form:
         <gene> <heat> <perturbation/activity sign (+/-)>
 
@@ -88,14 +88,14 @@ def parseHeats(file, network_nodes=None):
     return (heats, signs)
 
 
-def edgelist2nodes(list):
+def edgelist_to_nodes(list):
     """Input:
         A list of edges in (source, interaction, target) string form.
 
     Returns:
         A set object of nodes in the input network
 
-    >>> edgelist2nodes([("A","i>","B"),("B","-a>","C")])
+    >>> edgelist_to_nodes([("A","i>","B"),("B","-a>","C")])
     set(['A', 'C', 'B'])
     """
 
@@ -107,22 +107,22 @@ def edgelist2nodes(list):
     return nodes
 
 
-def classifyInteraction(i):
+def classify_interaction(i):
     """Returns the edge activation type (-1,0,1), and the textual description
 
-    >>> classifyInteraction("component>")
+    >>> classify_interaction("component>")
     (0, 'component')
-    >>> classifyInteraction("-a>")
+    >>> classify_interaction("-a>")
     (1, 'a')
-    >>> classifyInteraction("-t>")
+    >>> classify_interaction("-t>")
     (1, 't')
-    >>> classifyInteraction("-t|")
+    >>> classify_interaction("-t|")
     (-1, 't')
-    >>> classifyInteraction("-a|")
+    >>> classify_interaction("-a|")
     (-1, 'a')
-    >>> classifyInteraction("HPRD>")
+    >>> classify_interaction("HPRD>")
     (1, 'INTERACTS')
-    >>> classifyInteraction("REWIRED>")
+    >>> classify_interaction("REWIRED>")
     (1, 'REWIRED')
     """
     componentRE = re.compile('^-?component>$')
@@ -151,7 +151,7 @@ def classifyInteraction(i):
         return (1, 'INTERACTS')
 
 
-def getOutDegrees(network):
+def get_out_degrees(network):
     """Get the out-degree of each node in the network
 
     Input:
@@ -169,7 +169,7 @@ def getOutDegrees(network):
     >>> network['S2'].add(('a>','T2'))
     >>> network['S2'].add(('a|','T3'))
     >>> network['T1'].add(('t|','T2'))
-    >>> getOutDegrees(network)
+    >>> get_out_degrees(network)
     {'S2': 2, 'S1': 1, 'T2': 0, 'T3': 0, 'T1': 1}
 
     """
@@ -183,11 +183,11 @@ def getOutDegrees(network):
     return outDegrees
 
 
-def edges2degrees(edges):
+def edges_to_degrees(edges):
     """Takes simple edges in (source, target) format, and returns a hash of the
     total degree of each node.
 
-    >>> edges2degrees([("A","B"),("B","C")])
+    >>> edges_to_degrees([("A","B"),("B","C")])
     {'A': 1, 'C': 1, 'B': 2}
     """
 
@@ -208,7 +208,7 @@ def edges2degrees(edges):
     return sizes
 
 
-def isRewired(i):
+def is_rewired(i):
     """Check if interaction type indicates a rewired edge."""
     rewiredRE = re.compile('.*REWIRED.*')
     rewiredComponentRE = re.compile(r'.*\-component.*')
@@ -224,7 +224,7 @@ def isRewired(i):
 # do a depth-first search by following directional links
 # until we hit another source
 # find edges
-def searchDFS(
+def search_dfs(
     source,
     action,
     discovered,
@@ -267,8 +267,8 @@ def searchDFS(
     for interaction, target in net[source]:
         # if we arrived here through a bad link, any continued path is counted as false
         pathStatus_ThisTarget = falsePathStatus
-        (i_type, post_t_type) = classifyInteraction(interaction)
-        if isRewired(interaction):
+        (i_type, post_t_type) = classify_interaction(interaction)
+        if is_rewired(interaction):
             pathStatus_ThisTarget = True
 
         # don't follow component links
@@ -324,7 +324,7 @@ def searchDFS(
             continue
 
         # add this link and keep searching from the target
-        searchDFS(
+        search_dfs(
             target,
             action_this_target,
             discovered,
@@ -340,11 +340,11 @@ def searchDFS(
         )
 
 
-def classifyState(up_signs, down_signs):
+def classify_state(up_signs, down_signs):
     """Build a hash of putative effects of perturbations,
     and inferred transcription activity.
 
-    >>> classifyState({'A':"+",'B':"+"}, {'B':"-",'C':"-"})
+    >>> classify_state({'A':"+",'B':"+"}, {'B':"-",'C':"-"})
     ({'A': 1, 'C': -1, 'B': 1}, {'C': -1, 'B': -1})
     """
 
@@ -370,7 +370,7 @@ def classifyState(up_signs, down_signs):
 
 
 # build an index, source to targets fro the directed graph
-def parseNet(network):
+def parse_net(network):
     """Build a directed network from a .sif file.
 
     Inputs:
@@ -398,7 +398,7 @@ def parseNet(network):
     return net
 
 
-def findLinkerCutoff(
+def find_linker_cutoff(
     source_set, target_set, up_heat_diffused, down_heat_diffused, size
 ):
     """For a given set of source, target, and diffused heats for each, find a threshold value
@@ -407,22 +407,22 @@ def findLinkerCutoff(
     Returns:
         The cutoff/threshold to use, and the Relevance Score at that cutoff
 
-    >>> findLinkerCutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 0.2)
+    >>> find_linker_cutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 0.2)
     (0.4999, 0.16666666666666666)
-    >>> findLinkerCutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 1.0)
+    >>> find_linker_cutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 1.0)
     (0, 0)
-    >>> findLinkerCutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 0.0)
+    >>> find_linker_cutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 0.0)
     (1000000, 0)
 
     """
     if down_heat_diffused is None:
         # diffusing from a single source (i.e. not TieDIE but the HotNet algorithm, for comparison)
-        cutoff, score = findLinkerCutoffSingle(
+        cutoff, score = find_linker_cutoff_single(
             source_set, up_heat_diffused, size
         )
     else:
         try:
-            cutoff, score = findLinkerCutoffMulti(
+            cutoff, score = find_linker_cutoff_multi(
                 source_set,
                 target_set,
                 up_heat_diffused,
@@ -434,7 +434,7 @@ def findLinkerCutoff(
             _linker_cutoff_error_count += 1
             if not _linker_cutoff_error_shown:
                 warnings.warn(
-                    f'findLinkerCutoff failed: {e}',
+                    f'find_linker_cutoff failed: {e}',
                     stacklevel=2,
                 )
                 _linker_cutoff_error_shown = True
@@ -443,7 +443,7 @@ def findLinkerCutoff(
     return (cutoff, score)
 
 
-def findLinkerCutoffSingle(source_set, up_heat_diffused, size):
+def find_linker_cutoff_single(source_set, up_heat_diffused, size):
     """If diffusing from a single source (i.e. not TieDIE but the HotNet algorithm, the implementation is trivial"""
 
     source_set = set(source_set)
@@ -471,7 +471,7 @@ def findLinkerCutoffSingle(source_set, up_heat_diffused, size):
     return (cutoff, 0)
 
 
-def findLinkerCutoffMulti(
+def find_linker_cutoff_multi(
     source_set, target_set, up_heat_diffused, down_heat_diffused, size
 ):
     """Find linker cutoff using bidirectional heat diffusion."""
@@ -489,7 +489,7 @@ def findLinkerCutoffMulti(
     # rank the min heats, and decrement the cutoff, adding an additional gene at each step
     EPSILON = 0.0001
 
-    f, min_heats = filterLinkers(up_heat_diffused, down_heat_diffused, 1)
+    f, min_heats = filter_linkers(up_heat_diffused, down_heat_diffused, 1)
     # Iterate through the reverse-sorted list of heats. Stop when the exclusive set of nodes is below the desired size
     for cutoff in [
         h - EPSILON
@@ -497,7 +497,7 @@ def findLinkerCutoffMulti(
             min_heats.items(), key=operator.itemgetter(1), reverse=True
         )
     ]:
-        score, size_frac = scoreLinkers(
+        score, size_frac = score_linkers(
             up_heat_diffused,
             up_sorted,
             down_heat_diffused,
@@ -513,7 +513,7 @@ def findLinkerCutoffMulti(
             return (cutoff, score)
 
 
-def scoreLinkers(
+def score_linkers(
     heats1, sorted1, heats2, sorted2, sourceSet, targetSet, cutoff, size
 ):
     """Get linkers greater than this cutoff according to reverse-sorted list.
@@ -563,7 +563,7 @@ def scoreLinkers(
     return (score, size_frac)
 
 
-def scoreLinkersMulti(input_heats, min_heats, cutoff, size):
+def score_linkers_multi(input_heats, min_heats, cutoff, size):
     """Get linkers greater than this cutoff according to reverse-sorted list.
     This version takes an arbitrary number of inputs.
 
@@ -597,7 +597,7 @@ def scoreLinkersMulti(input_heats, min_heats, cutoff, size):
     return (score, size_frac)
 
 
-def getMinHeats(diffused):
+def get_min_heats(diffused):
     """Gets the minimum heats for all genes, from a number of diffused heat vectors.
 
     Input:
@@ -621,7 +621,7 @@ def getMinHeats(diffused):
     return mins
 
 
-def getMaxHeats(diffused):
+def get_max_heats(diffused):
     """Gets the maximum heats for all genes, from a number of diffused heat vectors.
     Input:
         diffused = { 'set':{'gene1':heat1, 'gene2':...}
@@ -642,7 +642,7 @@ def getMaxHeats(diffused):
     return max
 
 
-def filterLinkers(up_heats_diffused, down_heats_diffused, cutoff):
+def filter_linkers(up_heats_diffused, down_heats_diffused, cutoff):
     """Use the min(diffused1, diffused2) function to return a list of genes
     that fall above that cutoff.
     Input:
@@ -669,7 +669,7 @@ def filterLinkers(up_heats_diffused, down_heats_diffused, cutoff):
     return (filtered, linkers)
 
 
-def mapUGraphToNetwork(edge_list, network):
+def map_ugraph_to_network(edge_list, network):
     """Map undirected edges to the network to form a subnetwork
     in the hash-key directed network format
 
@@ -703,7 +703,7 @@ def mapUGraphToNetwork(edge_list, network):
     return subnetwork
 
 
-def connectedSubnets(network, subnet_nodes):
+def connected_subnets(network, subnet_nodes):
     """Input:
         A network in hash[source] = set( (interaction, target), ... ) Form
         A set of nodes to use for edge selection
@@ -723,7 +723,7 @@ def connectedSubnets(network, subnet_nodes):
     >>> network['T1'].add(('t|','T2'))
     >>> network['T2'].add(('a>','T1'))
     >>> network['T3'].add(('t>','G5'))
-    >>> connectedSubnets(network, set(['S1','T1','T2','T3','G5']))
+    >>> connected_subnets(network, set(['S1','T1','T2','T3','G5']))
     set([('S1', 'T1'), ('T1', 'T2'), ('T2', 'T1')])
     """
     edgelist = set()
@@ -756,19 +756,19 @@ def connectedSubnets(network, subnet_nodes):
     return validated_edges
 
 
-def connectedNodes(network, hot_nodes):
-    """Call connectedSubnets to restrict to connected nodes, and return just the nodes
+def connected_nodes(network, hot_nodes):
+    """Call connected_subnets to restrict to connected nodes, and return just the nodes
     filtered in this step
     """
 
     nodes = set()
-    for s, t in connectedSubnets(network, hot_nodes):
+    for s, t in connected_subnets(network, hot_nodes):
         nodes.add(s)
         nodes.add(t)
     return nodes
 
 
-def runPCST(up_heats, down_heats, linker_genes, network_file):
+def run_pcst(up_heats, down_heats, linker_genes, network_file):
     """Convert input to format used for PCST program.
     Requires BioNet R package to be installed
     """
@@ -847,7 +847,7 @@ def runPCST(up_heats, down_heats, linker_genes, network_file):
     return pcst_network
 
 
-def writeNetwork(net, out_file):
+def write_network(net, out_file):
     """Write network to SIF file format."""
     out = open(out_file, 'w')
     for source in net:
@@ -857,7 +857,7 @@ def writeNetwork(net, out_file):
     out.close()
 
 
-def randomSubnet(network, num_sources):
+def random_subnet(network, num_sources):
     """Take a random sample of nodes, of the specified size
     from the supplied network
     """
@@ -868,7 +868,7 @@ def randomSubnet(network, num_sources):
     return sub
 
 
-def writeEL(el, so, down_set, out_file):
+def write_el(el, so, down_set, out_file):
     """Write edge list to file."""
     out = open(out_file, 'w')
     for source, int, target in el:
@@ -887,7 +887,7 @@ def writeEL(el, so, down_set, out_file):
     out.close()
 
 
-def writeNAfile(file_name, hash_values, attr_name):
+def write_na_file(file_name, hash_values, attr_name):
     """Write out a node-attribute file. Include the header
     attr_name, and use the supplied hash values.
     """
@@ -912,7 +912,7 @@ def writeNAfile(file_name, hash_values, attr_name):
     fh.close()
 
 
-def sampleHeats(heats):
+def sample_heats(heats):
     """Randomly sample 80% of heats for bootstrapping."""
     ss = int(len(heats) * 0.8)
     keys = random.sample(heats, ss)
@@ -923,7 +923,7 @@ def sampleHeats(heats):
     return subset
 
 
-def getNetworkNodes(network):
+def get_network_nodes(network):
     """Take a network in hash-key format and return a set containing the
     nodes in it.
     """
@@ -935,7 +935,7 @@ def getNetworkNodes(network):
     return nodes
 
 
-def normalizeHeats(data):
+def normalize_heats(data):
     """Normalize absolute value sum of data hash to 1000"""
     FACTOR = 1000
     normalized = {}

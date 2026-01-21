@@ -11,10 +11,10 @@ class Dist:
     def __init__(self, training_data, method):
         self.fit = {}
         if method == 'gaussian':
-            self.fitNorm(training_data)
+            self.fit_norm(training_data)
 
     @staticmethod
-    def fitLogNorm(vector, test_value):
+    def fit_log_norm(vector, test_value):
         """Fit a log-normal to the background distrubtion supplied.
         Get the p-value based on the log of the test value.
 
@@ -32,7 +32,7 @@ class Dist:
 
         return p_val
 
-    def fitNorm(self, vector):
+    def fit_norm(self, vector):
         """Fit a normal to the background distrubtion supplied.
 
         Input:
@@ -43,7 +43,7 @@ class Dist:
         self.mean = mean
         self.sd = sd
 
-    def getP(self, test_value):
+    def get_p(self, test_value):
         """Get 2-tailed p-value for test_value against fitted distribution."""
         EPSILON = 0.001
         p_val = norm.cdf(test_value + EPSILON, loc=self.mean, scale=self.sd)
@@ -56,7 +56,7 @@ class Dist:
 
         return p_val
 
-    def getZ(self, test_value):
+    def get_z(self, test_value):
         """Get z-score for test_value against fitted distribution."""
         z_score = (test_value - self.mean) / self.sd
         return z_score

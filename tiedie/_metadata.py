@@ -4,7 +4,7 @@ __all__ = ['__version__', '__author__', '__license__']
 
 import importlib.metadata
 
-_FALLBACK_VERSION = '2.0.0'
+_FALLBACK_VERSION = '2.0.1'
 
 try:
     __version__ = importlib.metadata.version('tiedie')

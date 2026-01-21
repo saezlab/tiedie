@@ -5,26 +5,26 @@ A network analysis algorithm that finds subnetworks connecting genomic
 perturbations to transcriptional changes in large gene interaction networks.
 """
 
+from ._metadata import __author__, __license__, __version__
 from .kernel import Kernel
 from .kernel_scipy import SciPYKernel
-from .ppr import PPrDiffuser
 from .permute import NetBalancedPermuter
+from .ppr import PPrDiffuser
 from .util import (
-    parseHeats,
-    parseNet,
-    normalizeHeats,
-    getNetworkNodes,
+    connectedSubnets,
     filterLinkers,
     findLinkerCutoff,
-    connectedSubnets,
+    getNetworkNodes,
     mapUGraphToNetwork,
+    normalizeHeats,
+    parseHeats,
+    parseNet,
 )
 
-__version__ = '2.0.0'
-__author__ = 'Evan Paull'
-__email__ = 'epaull@soe.ucsc.edu'
-
 __all__ = [
+    '__version__',
+    '__author__',
+    '__license__',
     'Kernel',
     'SciPYKernel',
     'PPrDiffuser',

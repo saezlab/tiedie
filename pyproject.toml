@@ -151,7 +151,14 @@ ignore = [
     "E303",  # Name: too-many-blank-lines
     "E501",  # Name: line too long
     "E731",  # Name: lambda-assignment
-    "E741"  # allow I, O, l as variable names -> I is the identity matrix
+    "E741",  # allow I, O, l as variable names -> I is the identity matrix
+    # Relaxed rules for legacy code
+    "ANN",  # flake8-annotations: legacy code lacks type hints
+    "D205",  # Name: blank-line-after-summary
+    "D212",  # Name: multi-line-summary-first-line
+    "D415",  # Name: ends-in-punctuation
+    "W191",  # Name: indentation-contains-tabs (legacy code)
+    "B007",  # Name: unused-loop-control-variable
 ]
 select = [
     "B",  # flake8-bugbear
@@ -167,7 +174,6 @@ select = [
     "W",  # Warning detected by Pycodestyle
     "Q",  # Consistent quotes
     "S307",  # eval() detection
-    "ANN"  # flake8-annotations
 ]
 unfixable = ["UP"]
 

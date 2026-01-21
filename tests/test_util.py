@@ -1,8 +1,8 @@
 """Tests for utility functions."""
+
 import pytest
 
-from tiedie.util import parseHeats, parseNet, getNetworkNodes, normalizeHeats
-
+from tiedie.util import parseNet, parseHeats, normalizeHeats, getNetworkNodes
 
 class TestUtilFunctions:
     """Tests for utility parsing and normalization functions."""

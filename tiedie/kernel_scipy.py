@@ -1,22 +1,18 @@
-import math
-import sys
 from array import array
 
-from numpy import dot, genfromtxt
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import expm
 
 class SciPYKernel:
+    """On-the-fly heat diffusion kernel using scipy matrix exponentiation."""
 
     def __init__(self, network_file):
-        """
-        Input:
+        """Input:
 
             network_file - a tab-delimited file in .sif network format:
             <source> <interaction> <target>
 
         Returns:
-
             Kernel object.
 
         """
@@ -72,51 +68,44 @@ class SciPYKernel:
 
         # Build the graph laplacian: the CSC matrix provides a sparse matrix format
         # that can be exponentiated efficiently
-        L = coo_matrix((data,(row, col)), shape=(num_nodes,num_nodes)).tocsc()
+        L = coo_matrix((data, (row, col)), shape=(num_nodes, num_nodes)).tocsc()
         time_T = -0.1
         self.laplacian = L
         self.index2node = index2node
         # this is the matrix exponentiation calculation.
         # Uses the Pade approximiation for accurate approximation. Computationally expensive.
         # O(n^2), n= # of features, in memory as well.
-        self.kernel = expm(time_T*L)
+        self.kernel = expm(time_T * L)
         self.labels = node_order
 
-        #self.printLaplacian()
+        # self.printLaplacian()
 
     def getLabels(self):
-        """
-            Return the set of all node/gene labels used by this kernel object
-        """
-        #all_labels = set()
-        #for label in self.labels:
+        """Return the set of all node/gene labels used by this kernel object"""
+        # all_labels = set()
+        # for label in self.labels:
         all_labels = set(self.labels)
 
         return all_labels
 
-
     def printLaplacian(self):
-        """
-        Debug function
-        """
+        """Debug function"""
         cx = self.laplacian.tocoo()
-        for i,j,v in zip(cx.row, cx.col, cx.data):
+        for i, j, v in zip(cx.row, cx.col, cx.data):
             a = self.index2node[i]
             b = self.index2node[j]
-            print("\t".join([a,b,str(v)]))
+            print('\t'.join([a, b, str(v)]))
 
     def parseNet(self, network):
-        """
-        Parse .sif network, using just the first and third columns
+        """Parse .sif network, using just the first and third columns
         to build an undirected graph. Store the node out-degrees
         in an index while we're at it.
         """
         edges = set()
         nodes = set()
         degrees = {}
-        for line in open(network, 'r'):
-
-            parts = line.rstrip().split("\t")
+        for line in open(network):
+            parts = line.rstrip().split('\t')
             source = parts[0]
             target = parts[2]
 
@@ -139,18 +128,16 @@ class SciPYKernel:
 
         return (edges, nodes, degrees)
 
-
     def kernelMultiplyOne(self, vector):
-        """
-            Multiply the specified kernel by the supplied input heat vector.
+        """Multiply the specified kernel by the supplied input heat vector.
 
-            Input:
-                vector: A hash mapping gene labels to floating point values
-                kernel: a single index for a specific kernel
+        Input:
+            vector: A hash mapping gene labels to floating point values
+            kernel: a single index for a specific kernel
 
-            Returns:
-                A hash of diffused heats, indexed by the same names as the
-                input vector
+        Returns:
+            A hash of diffused heats, indexed by the same names as the
+            input vector
         """
         # Have to convert to ordered array format for the input vector
         array = []
@@ -163,7 +150,7 @@ class SciPYKernel:
                 array.append(0)
 
         # take the dot product
-        value = self.kernel*array
+        value = self.kernel * array
 
         # Convert back to a hash and return diffused heats
         return_vec = {}
@@ -175,8 +162,7 @@ class SciPYKernel:
         return return_vec
 
     def diffuse(self, vector, reverse=False):
-        """
-        Diffuse input heats over the set of kernels, add to this object
+        """Diffuse input heats over the set of kernels, add to this object
 
         Input:
             {'gene1': float(heat1)

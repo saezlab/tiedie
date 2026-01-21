@@ -1,5 +1,4 @@
-"""
-TieDIE: Tied Diffusion for Network Discovery
+"""TieDIE: Tied Diffusion for Network Discovery
 
 Command-line interface for the TieDIE algorithm.
 
@@ -16,33 +15,32 @@ Outputs:
     output to that. Information and warnings are logged to standard error.
 """
 
-import argparse
 import os
 import sys
+import argparse
 
-from .kernel import Kernel
-from .kernel_scipy import SciPYKernel
-from .master_reg import ActivityScores
-from .permute import NetBalancedPermuter
 from .ppr import PPrDiffuser
 from .util import (
-    classifyState,
-    connectedSubnets,
-    filterLinkers,
-    findLinkerCutoff,
-    getNetworkNodes,
-    getOutDegrees,
-    mapUGraphToNetwork,
-    normalizeHeats,
-    parseHeats,
-    parseNet,
     runPCST,
-    searchDFS,
     writeEL,
+    parseNet,
+    searchDFS,
+    parseHeats,
     writeNAfile,
     writeNetwork,
+    classifyState,
+    filterLinkers,
+    getOutDegrees,
+    normalizeHeats,
+    getNetworkNodes,
+    connectedSubnets,
+    findLinkerCutoff,
+    mapUGraphToNetwork,
 )
-
+from .kernel import Kernel
+from .permute import NetBalancedPermuter
+from .master_reg import ActivityScores
+from .kernel_scipy import SciPYKernel
 
 def extract_subnetwork(
     up_heats,
@@ -52,11 +50,10 @@ def extract_subnetwork(
     size_control,
     set_alpha,
     network,
-    use_pcst = False,
-    network_file = None,
+    use_pcst=False,
+    network_file=None,
 ):
-    """
-    Generate a spanning subnetwork from the supplied inputs, diffused heats
+    """Generate a spanning subnetwork from the supplied inputs, diffused heats
     and size control cutoff.
 
     Args:
@@ -104,7 +101,9 @@ def extract_subnetwork(
         ugraph = connectedSubnets(network, nodes)
 
     if len(ugraph) == 0:
-        sys.stderr.write("Couldn't find any linking graph at this size setting!\n")
+        sys.stderr.write(
+            "Couldn't find any linking graph at this size setting!\n"
+        )
         return (None, None, None, None)
 
     subnet_soln = mapUGraphToNetwork(ugraph, network)
@@ -114,7 +113,7 @@ def extract_subnetwork(
     for s in subnet_soln:
         subnet_soln_nodes.add(s)
 
-        for (i, t) in subnet_soln[s]:
+        for i, t in subnet_soln[s]:
             subnet_soln_nodes.add(t)
 
     return (subnet_soln, subnet_soln_nodes, alpha_score, linker_scores)
@@ -126,10 +125,9 @@ def find_consistent_paths(
     search_network,
     output_folder,
     search_depth,
-    output = True,
+    output=True,
 ):
-    """
-    Filter the heat-generated network by searching for all directed paths
+    """Filter the heat-generated network by searching for all directed paths
     from each source to each target gene.
 
     Args:
@@ -151,7 +149,6 @@ def find_consistent_paths(
     FP = 0
 
     for source in up_signs:
-
         action = gene_states[source]
         falsePaths = []
         truePaths = []
@@ -179,21 +176,24 @@ def find_consistent_paths(
         FP += len(falsePaths)
 
         if output:
-            out_file = output_folder + "/" + source + ".cn.sif"
-            sys.stderr.write("Writing Single Causal Neighborhood to " + out_file + "\n")
+            out_file = output_folder + '/' + source + '.cn.sif'
+            sys.stderr.write(
+                'Writing Single Causal Neighborhood to ' + out_file + '\n'
+            )
             writeEL(edges_this_source, source, down_set, out_file)
 
     if output:
-        out_file = output_folder + "/tiedie.cn.sif"
-        sys.stderr.write("Writing Full Causal Neighborhood to " + out_file + "\n")
-        writeEL(validated, "ALL", down_set, out_file)
+        out_file = output_folder + '/tiedie.cn.sif'
+        sys.stderr.write(
+            'Writing Full Causal Neighborhood to ' + out_file + '\n'
+        )
+        writeEL(validated, 'ALL', down_set, out_file)
 
     return (TP, FP, validated)
 
 
 def score_subnet(subnet_soln_nodes, up_heats, down_heats, report_fh):
-    """
-    Score sets according to a Compactness Score that weighs the coverage of
+    """Score sets according to a Compactness Score that weighs the coverage of
     source and target sets while penalizing for the number of linker nodes
     needed to connect them.
     """
@@ -206,103 +206,120 @@ def score_subnet(subnet_soln_nodes, up_heats, down_heats, report_fh):
     Tr = T.intersection(subnet_soln_nodes)
     PENALTY_CONST = 0.1
     penalty = (float(len(C)) / len(U)) * PENALTY_CONST
-    score = float(len(Sr)) / (len(S) * 2) + float(len(Tr)) / (len(T) * 2) - penalty
+    score = (
+        float(len(Sr)) / (len(S) * 2) + float(len(Tr)) / (len(T) * 2) - penalty
+    )
 
     report_fh.write(
-        str(float(len(Sr)) / len(S)) + "\t" + "of source nodes" +
-        str(len(Sr)) + " out of " + str(len(S)) + "\n"
+        str(float(len(Sr)) / len(S))
+        + '\t'
+        + 'of source nodes'
+        + str(len(Sr))
+        + ' out of '
+        + str(len(S))
+        + '\n'
     )
     report_fh.write(
-        str(float(len(Tr)) / len(T)) + "\t" + "of target nodes" +
-        str(len(Tr)) + " out of " + str(len(T)) + "\n"
+        str(float(len(Tr)) / len(T))
+        + '\t'
+        + 'of target nodes'
+        + str(len(Tr))
+        + ' out of '
+        + str(len(T))
+        + '\n'
     )
-    report_fh.write("And " + str(len(C)) + " connecting nodes\n")
+    report_fh.write('And ' + str(len(C)) + ' connecting nodes\n')
 
     return score
 
 
 def create_parser():
-    """
-    Create argument parser for TieDIE CLI.
-    """
+    """Create argument parser for TieDIE CLI."""
 
     parser = argparse.ArgumentParser(
-        description = 'TieDIE: Tied Diffusion for Network Discovery',
-        formatter_class = argparse.RawDescriptionHelpFormatter,
+        description='TieDIE: Tied Diffusion for Network Discovery',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        '-n', '--network',
-        required = True,
-        help = '.sif network file for the curated pathway to search',
+        '-n',
+        '--network',
+        required=True,
+        help='.sif network file for the curated pathway to search',
     )
     parser.add_argument(
-        '-u', '--up_heats',
-        required = True,
-        help = 'File with upstream heats: <gene> <heat> <sign (+/-)>',
+        '-u',
+        '--up_heats',
+        required=True,
+        help='File with upstream heats: <gene> <heat> <sign (+/-)>',
     )
     parser.add_argument(
-        '-d', '--down_heats',
-        help = 'File with downstream heats: <gene> <heat> <sign (+/-)>',
+        '-d',
+        '--down_heats',
+        help='File with downstream heats: <gene> <heat> <sign (+/-)>',
     )
     parser.add_argument(
         '--d_expr',
-        help = 'Differential expression file (alternative to --down_heats)',
+        help='Differential expression file (alternative to --down_heats)',
     )
     parser.add_argument(
-        '-k', '--kernel',
-        help = 'Pre-computed heat diffusion kernel file',
+        '-k',
+        '--kernel',
+        help='Pre-computed heat diffusion kernel file',
     )
     parser.add_argument(
-        '-s', '--size',
-        type = float,
-        default = 1.0,
-        help = 'Network size control factor (default: 1.0)',
+        '-s',
+        '--size',
+        type=float,
+        default=1.0,
+        help='Network size control factor (default: 1.0)',
     )
     parser.add_argument(
-        '-a', '--alpha',
-        help = 'Linker cutoff (overrides size factor)',
+        '-a',
+        '--alpha',
+        help='Linker cutoff (overrides size factor)',
     )
     parser.add_argument(
-        '-c', '--depth',
-        type = int,
-        default = 3,
-        help = 'Search depth for causal paths (default: 3)',
+        '-c',
+        '--depth',
+        type=int,
+        default=3,
+        help='Search depth for causal paths (default: 3)',
     )
     parser.add_argument(
-        '-p', '--permute',
-        type = int,
-        default = 1000,
-        help = 'Number of random permutations (default: 1000)',
+        '-p',
+        '--permute',
+        type=int,
+        default=1000,
+        help='Number of random permutations (default: 1000)',
     )
     parser.add_argument(
-        '-m', '--min_hub',
-        type = int,
-        help = 'Minimum genes in regulon for TF (required with --d_expr)',
+        '-m',
+        '--min_hub',
+        type=int,
+        help='Minimum genes in regulon for TF (required with --d_expr)',
     )
     parser.add_argument(
         '--pagerank',
-        action = 'store_true',
-        help = 'Use Personalized PageRank to diffuse',
+        action='store_true',
+        help='Use Personalized PageRank to diffuse',
     )
     parser.add_argument(
         '--pcst',
-        action = 'store_true',
-        help = 'Use Prize-Collecting Steiner Tree formulation',
+        action='store_true',
+        help='Use Prize-Collecting Steiner Tree formulation',
     )
     parser.add_argument(
         '--output_folder',
-        default = 'TieDIE',
-        help = 'Output folder (default: TieDIE)',
+        default='TieDIE',
+        help='Output folder (default: TieDIE)',
     )
 
     return parser
 
 
-def main(args = None):
-    """
-    Main entry point for TieDIE CLI.
-    """
+def main(args=None):
+    """Main entry point for TieDIE CLI."""
 
     parser = create_parser()
     opts = parser.parse_args(args)
@@ -319,12 +336,12 @@ def main(args = None):
 
     if opts.kernel is None:
         sys.stderr.write(
-            "Warning: No kernel file supplied, will use SCIPY to compute "
-            "the matrix exponential, t=0.1...\n"
+            'Warning: No kernel file supplied, will use SCIPY to compute '
+            'the matrix exponential, t=0.1...\n'
         )
 
     # Parse network
-    sys.stderr.write("Parsing Network File..\n")
+    sys.stderr.write('Parsing Network File..\n')
     network = parseNet(opts.network)
     network_nodes = getNetworkNodes(network)
 
@@ -340,16 +357,15 @@ def main(args = None):
         down_heats = ActivityScores.findRegulators(
             network,
             opts.d_expr,
-            min_hub = opts.min_hub,
+            min_hub=opts.min_hub,
         )
         down_signs = {}
 
-        for (g, h) in down_heats.items():
-
+        for g, h in down_heats.items():
             if h < 0:
-                down_signs[g] = "-"
+                down_signs[g] = '-'
             else:
-                down_signs[g] = "+"
+                down_signs[g] = '+'
 
             down_heats[g] = abs(h)
 
@@ -368,58 +384,61 @@ def main(args = None):
     if opts.pagerank:
         diffuser = PPrDiffuser(network)
     elif opts.kernel is not None:
-        sys.stderr.write("Loading Heat Diffusion Kernel..\n")
+        sys.stderr.write('Loading Heat Diffusion Kernel..\n')
         diffuser = Kernel(opts.kernel)
     else:
-        sys.stderr.write("Using SCIPY to compute the matrix exponential, t=0.1...\n")
+        sys.stderr.write(
+            'Using SCIPY to compute the matrix exponential, t=0.1...\n'
+        )
         diffuser = SciPYKernel(opts.network)
 
     # Validate kernel labels match network
     k_labels = diffuser.getLabels()
 
-    if (
-        len(network_nodes) != len(k_labels) or
-        len(network_nodes.intersection(k_labels)) != len(k_labels)
-    ):
+    if len(network_nodes) != len(k_labels) or len(
+        network_nodes.intersection(k_labels)
+    ) != len(k_labels):
         sys.stderr.write(
-            "Error: the universe of gene/node labels in the network file "
+            'Error: the universe of gene/node labels in the network file '
             "doesn't match the supplied kernel file!\n"
         )
         sys.exit(1)
 
     # Diffuse heats
-    sys.stderr.write("Diffusing Heats...\n")
-    up_heats_diffused = diffuser.diffuse(up_heats, reverse = False)
-    down_heats_diffused = diffuser.diffuse(down_heats, reverse = True)
+    sys.stderr.write('Diffusing Heats...\n')
+    up_heats_diffused = diffuser.diffuse(up_heats, reverse=False)
+    down_heats_diffused = diffuser.diffuse(down_heats, reverse=True)
 
     # Extract subnetwork
-    subnet_soln, subnet_soln_nodes, alpha_score, linker_scores = extract_subnetwork(
-        up_heats,
-        down_heats,
-        up_heats_diffused,
-        down_heats_diffused,
-        opts.size,
-        opts.alpha,
-        network,
-        use_pcst = opts.pcst,
-        network_file = opts.network,
+    subnet_soln, subnet_soln_nodes, alpha_score, linker_scores = (
+        extract_subnetwork(
+            up_heats,
+            down_heats,
+            up_heats_diffused,
+            down_heats_diffused,
+            opts.size,
+            opts.alpha,
+            network,
+            use_pcst=opts.pcst,
+            network_file=opts.network,
+        )
     )
 
     # Generate linker stats
     out_degrees = getOutDegrees(subnet_soln)
-    sys.stderr.write("Writing network node stats to " + output_folder + "/node.stats\n")
-    out_file = output_folder + "/node.stats"
+    sys.stderr.write(
+        'Writing network node stats to ' + output_folder + '/node.stats\n'
+    )
+    out_file = output_folder + '/node.stats'
 
     with open(out_file, 'w') as out:
-
-        out.write("NODE\tCONNECTING\tMIN_HEAT\tOUT_DEGREE\n")
+        out.write('NODE\tCONNECTING\tMIN_HEAT\tOUT_DEGREE\n')
         node_types = {}
 
         for node in subnet_soln_nodes:
-
             out_deg = out_degrees[node]
             linker_heat = linker_scores[node]
-            connecting = "0"
+            connecting = '0'
 
             if node in up_heats:
                 node_types[node] = 1
@@ -427,20 +446,22 @@ def main(args = None):
                 node_types[node] = -1
 
             if node not in up_heats:
-
                 if down_heats is not None and node not in down_heats:
-                    connecting = "1"
+                    connecting = '1'
                     node_types[node] = 0
 
-            out.write("\t".join([node, connecting, str(linker_heat), str(out_deg)]) + "\n")
+            out.write(
+                '\t'.join([node, connecting, str(linker_heat), str(out_deg)])
+                + '\n'
+            )
 
     # Write Cytoscape files
-    writeNAfile(output_folder + "/node_types.NA", node_types, "NodeTypes")
-    writeNAfile(output_folder + "/heats.NA", linker_scores, "LinkerHeats")
+    writeNAfile(output_folder + '/node_types.NA', node_types, 'NodeTypes')
+    writeNAfile(output_folder + '/heats.NA', linker_scores, 'LinkerHeats')
 
     # Write network
-    sys.stderr.write("Writing " + output_folder + "/tiedie.sif result\n")
-    writeNetwork(subnet_soln, output_folder + "/tiedie.sif")
+    sys.stderr.write('Writing ' + output_folder + '/tiedie.sif result\n')
+    writeNetwork(subnet_soln, output_folder + '/tiedie.sif')
 
     # Find consistent paths
     TP, FP, validated = find_consistent_paths(
@@ -449,22 +470,23 @@ def main(args = None):
         subnet_soln,
         output_folder,
         opts.depth,
-        output = True,
+        output=True,
     )
 
     # Write report
-    report_file = output_folder + "/report.txt"
+    report_file = output_folder + '/report.txt'
 
     with open(report_file, 'w') as report_fh:
-
-        sys.stderr.write("Writing Report to " + report_file + " :compactness analysis\n")
+        sys.stderr.write(
+            'Writing Report to ' + report_file + ' :compactness analysis\n'
+        )
         score = score_subnet(subnet_soln_nodes, up_heats, down_heats, report_fh)
-        report_fh.write("Compactness Score:" + str(score) + "\n")
+        report_fh.write('Compactness Score:' + str(score) + '\n')
 
         # Permutation test
         sys.stderr.write(
-            "Running permutation tests... (could take several minutes for "
-            "inputs of hundreds of genes @1000 permutations)\n"
+            'Running permutation tests... (could take several minutes for '
+            'inputs of hundreds of genes @1000 permutations)\n'
         )
         perObj = NetBalancedPermuter(network, up_heats)
         permutedHeats = perObj.permute(opts.permute)
@@ -482,27 +504,33 @@ def main(args = None):
             permuted_scores.append(perm_score)
 
         # Write score files
-        with open(output_folder + "/score.txt", 'w') as sig_fh:
-            sig_fh.write(str(alpha_score) + "\n")
+        with open(output_folder + '/score.txt', 'w') as sig_fh:
+            sig_fh.write(str(alpha_score) + '\n')
 
-        with open(output_folder + "/permuted_scores.txt", 'w') as sig_fh:
-
-            for val in sorted(permuted_scores, reverse = True):
-                sig_fh.write(str(val) + "\n")
+        with open(output_folder + '/permuted_scores.txt', 'w') as sig_fh:
+            for val in sorted(permuted_scores, reverse=True):
+                sig_fh.write(str(val) + '\n')
 
         # Calculate p-value
         no_gte = 0.0
 
-        for val in sorted(permuted_scores, reverse = True):
-
+        for val in sorted(permuted_scores, reverse=True):
             if val >= alpha_score:
                 no_gte += 1
             else:
                 break
 
         pval = (no_gte + 1) / (opts.permute + 1)
-        sys.stderr.write("Writing Report to " + report_file + " :empirical p-value...\n")
-        report_fh.write("P-value: " + str(pval) + " (with " + str(opts.permute) + " random permutations)\n")
+        sys.stderr.write(
+            'Writing Report to ' + report_file + ' :empirical p-value...\n'
+        )
+        report_fh.write(
+            'P-value: '
+            + str(pval)
+            + ' (with '
+            + str(opts.permute)
+            + ' random permutations)\n'
+        )
 
 
 if __name__ == '__main__':

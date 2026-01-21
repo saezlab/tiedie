@@ -1,20 +1,15 @@
-import math
-import sys
-
-import numpy as np
 from numpy import dot, genfromtxt
 
 class Kernel:
+    """Pre-computed heat diffusion kernel for network analysis."""
 
     def __init__(self, kernel_files):
-        """
-            Input:
+        """Input:
 
-                kernel_file - a tab-delimited matrix file with both a header
-                and first-row labels, in the same order.
+            kernel_file - a tab-delimited matrix file with both a header
+            and first-row labels, in the same order.
 
-            Returns:
-
+        Returns:
                 Kernel object.
         """
 
@@ -29,25 +24,23 @@ class Kernel:
         self.ncols = {}
         self.nrows = {}
         # parse each kernel file
-        for kernel in kernel_files.split(":"):
+        for kernel in kernel_files.split(':'):
             # numpy's genfromtxt format. Relatively memory-intensive
             # FIXME: add option for matlab .mat compressed file format
-            self.kernels[kernel] = genfromtxt(kernel,delimiter="\t")[1:,1:]
+            self.kernels[kernel] = genfromtxt(kernel, delimiter='\t')[1:, 1:]
             self.labels[kernel] = None
-            fh = open(kernel,'r')
+            fh = open(kernel)
             # get the header line
             for line in fh:
-                self.labels[kernel] = line.rstrip().split("\t")[1:]
+                self.labels[kernel] = line.rstrip().split('\t')[1:]
                 break
             fh.close()
 
-            self.ncols[kernel] = self.kernels[kernel].shape[1]-1
-            self.nrows[kernel] = self.kernels[kernel].shape[0]-1
+            self.ncols[kernel] = self.kernels[kernel].shape[1] - 1
+            self.nrows[kernel] = self.kernels[kernel].shape[0] - 1
 
     def getLabels(self):
-        """
-            Return the set of all node/gene labels used by this kernel object
-        """
+        """Return the set of all node/gene labels used by this kernel object"""
         all_labels = set()
         for label in self.labels:
             all_labels = all_labels.union(set(self.labels[label]))
@@ -55,16 +48,15 @@ class Kernel:
         return all_labels
 
     def kernelMultiplyOne(self, kernel, vector):
-        """
-            Multiply the specified kernel by the supplied input heat vector.
+        """Multiply the specified kernel by the supplied input heat vector.
 
-            Input:
-                vector: A hash mapping gene labels to floating point values
-                kernel: a single index for a specific kernel
+        Input:
+            vector: A hash mapping gene labels to floating point values
+            kernel: a single index for a specific kernel
 
-            Returns:
-                A hash of diffused heats, indexed by the same names as the
-                input vector
+        Returns:
+            A hash of diffused heats, indexed by the same names as the
+            input vector
         """
 
         # Have to convert to ordered array format for the input vector
@@ -90,9 +82,7 @@ class Kernel:
         return return_vec
 
     def addVectors(self, vector_list):
-        """
-        Sum vectors: Add hash / float-valued vectors
-        """
+        """Sum vectors: Add hash / float-valued vectors"""
         sum = {}
 
         for vec in vector_list:
@@ -106,8 +96,7 @@ class Kernel:
         return sum
 
     def diffuse(self, vector, reverse=False):
-        """
-        Diffuse input heats over the set of kernels, add to this object
+        """Diffuse input heats over the set of kernels, add to this object
 
         Input:
             {'gene1': float(heat1)

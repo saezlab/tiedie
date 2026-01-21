@@ -1,25 +1,24 @@
-"""
-TieDIE: Tied Diffusion for Network Discovery
+"""TieDIE: Tied Diffusion for Network Discovery
 
 A network analysis algorithm that finds subnetworks connecting genomic
 perturbations to transcriptional changes in large gene interaction networks.
 """
 
-from ._metadata import __author__, __license__, __version__
-from .kernel import Kernel
-from .kernel_scipy import SciPYKernel
-from .permute import NetBalancedPermuter
 from .ppr import PPrDiffuser
 from .util import (
-    connectedSubnets,
-    filterLinkers,
-    findLinkerCutoff,
-    getNetworkNodes,
-    mapUGraphToNetwork,
-    normalizeHeats,
-    parseHeats,
     parseNet,
+    parseHeats,
+    filterLinkers,
+    normalizeHeats,
+    getNetworkNodes,
+    connectedSubnets,
+    findLinkerCutoff,
+    mapUGraphToNetwork,
 )
+from .kernel import Kernel
+from .permute import NetBalancedPermuter
+from ._metadata import __author__, __license__, __version__
+from .kernel_scipy import SciPYKernel
 
 __all__ = [
     '__version__',

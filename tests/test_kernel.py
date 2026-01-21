@@ -1,7 +1,6 @@
 """Tests for heat diffusion kernel functionality."""
-from pathlib import Path
 
-import pytest
+from pathlib import Path
 
 from tiedie import Kernel, SciPYKernel
 from tiedie.util import parseHeats

@@ -1,8 +1,9 @@
 """Integration tests for TieDIE using GBM example data."""
+
 from pathlib import Path
 
 from tiedie import SciPYKernel
-from tiedie.util import getNetworkNodes, normalizeHeats, parseHeats, parseNet
+from tiedie.util import parseNet, parseHeats, normalizeHeats, getNetworkNodes
 
 TEST_DIR = Path(__file__).parent / 'test_files'
 GBM_PATHWAY = TEST_DIR / 'gbm_pathway.sif'

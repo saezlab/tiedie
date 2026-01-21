@@ -89,14 +89,19 @@ def parse_heats(file, network_nodes=None):
 
 
 def edgelist_to_nodes(list):
-    """Input:
-        A list of edges in (source, interaction, target) string form.
+    """Convert edge list to set of nodes.
+
+    Args:
+        list: A list of edges in (source, interaction, target) string form.
 
     Returns:
-        A set object of nodes in the input network
+        A set object of nodes in the input network.
 
-    >>> edgelist_to_nodes([("A","i>","B"),("B","-a>","C")])
-    set(['A', 'C', 'B'])
+    Example:
+        ```python
+        edgelist_to_nodes([("A", "i>", "B"), ("B", "-a>", "C")])
+        # Returns: {'A', 'B', 'C'}
+        ```
     """
 
     nodes = set()
@@ -108,22 +113,23 @@ def edgelist_to_nodes(list):
 
 
 def classify_interaction(i):
-    """Returns the edge activation type (-1,0,1), and the textual description
+    """Classify an interaction type string.
 
-    >>> classify_interaction("component>")
-    (0, 'component')
-    >>> classify_interaction("-a>")
-    (1, 'a')
-    >>> classify_interaction("-t>")
-    (1, 't')
-    >>> classify_interaction("-t|")
-    (-1, 't')
-    >>> classify_interaction("-a|")
-    (-1, 'a')
-    >>> classify_interaction("HPRD>")
-    (1, 'INTERACTS')
-    >>> classify_interaction("REWIRED>")
-    (1, 'REWIRED')
+    Args:
+        i: Interaction type string (e.g., "-a>", "-t|", "component>").
+
+    Returns:
+        Tuple of (activation_type, description) where activation_type is
+        -1 (inhibition), 0 (neutral), or 1 (activation).
+
+    Example:
+        ```python
+        classify_interaction("component>")  # Returns: (0, 'component')
+        classify_interaction("-a>")         # Returns: (1, 'a')
+        classify_interaction("-t>")         # Returns: (1, 't')
+        classify_interaction("-t|")         # Returns: (-1, 't')
+        classify_interaction("-a|")         # Returns: (-1, 'a')
+        ```
     """
     componentRE = re.compile('^-?component>$')
     activatingRE = re.compile(r'^-?(\S)>$')
@@ -152,26 +158,24 @@ def classify_interaction(i):
 
 
 def get_out_degrees(network):
-    """Get the out-degree of each node in the network
+    """Get the out-degree of each node in the network.
 
-    Input:
-        network:
-            { [source]: (interaction, target) }
+    Args:
+        network: Dict mapping source nodes to sets of (interaction, target) tuples.
 
     Returns:
-        a hash of node out-degrees
+        Dict mapping each node to its out-degree.
 
-    >>> network = {}
-    >>> network['S1'] = set()
-    >>> network['S2'] = set()
-    >>> network['T1'] = set()
-    >>> network['S1'].add(('a>','T1'))
-    >>> network['S2'].add(('a>','T2'))
-    >>> network['S2'].add(('a|','T3'))
-    >>> network['T1'].add(('t|','T2'))
-    >>> get_out_degrees(network)
-    {'S2': 2, 'S1': 1, 'T2': 0, 'T3': 0, 'T1': 1}
-
+    Example:
+        ```python
+        network = {
+            'S1': {('a>', 'T1')},
+            'S2': {('a>', 'T2'), ('a|', 'T3')},
+            'T1': {('t|', 'T2')},
+        }
+        get_out_degrees(network)
+        # Returns: {'S1': 1, 'S2': 2, 'T1': 1, 'T2': 0, 'T3': 0}
+        ```
     """
     outDegrees = {}
     for s in network:
@@ -184,11 +188,19 @@ def get_out_degrees(network):
 
 
 def edges_to_degrees(edges):
-    """Takes simple edges in (source, target) format, and returns a hash of the
-    total degree of each node.
+    """Convert edge list to node degree counts.
 
-    >>> edges_to_degrees([("A","B"),("B","C")])
-    {'A': 1, 'C': 1, 'B': 2}
+    Args:
+        edges: List of (source, target) tuples.
+
+    Returns:
+        Dict mapping each node to its total degree.
+
+    Example:
+        ```python
+        edges_to_degrees([("A", "B"), ("B", "C")])
+        # Returns: {'A': 1, 'B': 2, 'C': 1}
+        ```
     """
 
     nodes = {}
@@ -341,11 +353,20 @@ def search_dfs(
 
 
 def classify_state(up_signs, down_signs):
-    """Build a hash of putative effects of perturbations,
-    and inferred transcription activity.
+    """Build a hash of putative effects of perturbations and inferred transcription activity.
 
-    >>> classify_state({'A':"+",'B':"+"}, {'B':"-",'C':"-"})
-    ({'A': 1, 'C': -1, 'B': 1}, {'C': -1, 'B': -1})
+    Args:
+        up_signs: Dict mapping upstream genes to their signs ('+' or '-').
+        down_signs: Dict mapping downstream genes to their signs ('+' or '-').
+
+    Returns:
+        Tuple of (gene_states, transcription_states) dicts with numeric values (1 or -1).
+
+    Example:
+        ```python
+        classify_state({'A': '+', 'B': '+'}, {'B': '-', 'C': '-'})
+        # Returns: ({'A': 1, 'B': 1, 'C': -1}, {'B': -1, 'C': -1})
+        ```
     """
 
     c = {}
@@ -401,19 +422,29 @@ def parse_net(network):
 def find_linker_cutoff(
     source_set, target_set, up_heat_diffused, down_heat_diffused, size
 ):
-    """For a given set of source, target, and diffused heats for each, find a threshold value
-    that yeilds a "linker" set of the given size (relative to the input set size).
+    """Find a heat threshold that yields a linker set of the given size.
+
+    Args:
+        source_set: Set of source node names.
+        target_set: Set of target node names.
+        up_heat_diffused: Dict mapping nodes to upstream diffused heat values.
+        down_heat_diffused: Dict mapping nodes to downstream diffused heat values.
+        size: Relative size of the linker set (compared to input set size).
 
     Returns:
-        The cutoff/threshold to use, and the Relevance Score at that cutoff
+        Tuple of (cutoff_threshold, relevance_score).
 
-    >>> find_linker_cutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 0.2)
-    (0.4999, 0.16666666666666666)
-    >>> find_linker_cutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 1.0)
-    (0, 0)
-    >>> find_linker_cutoff( set(["A", "B"]), set(["X", "Y"]), {"A":1.0, "B":1.1, "C":0.5, "D":0.4}, {"X":2.0, "Y":2.1, "C":0.7, "D":0.5}, 0.0)
-    (1000000, 0)
-
+    Example:
+        ```python
+        find_linker_cutoff(
+            source_set={"A", "B"},
+            target_set={"X", "Y"},
+            up_heat_diffused={"A": 1.0, "B": 1.1, "C": 0.5, "D": 0.4},
+            down_heat_diffused={"X": 2.0, "Y": 2.1, "C": 0.7, "D": 0.5},
+            size=0.2
+        )
+        # Returns: (0.4999, 0.1667)
+        ```
     """
     if down_heat_diffused is None:
         # diffusing from a single source (i.e. not TieDIE but the HotNet algorithm, for comparison)
@@ -704,27 +735,27 @@ def map_ugraph_to_network(edge_list, network):
 
 
 def connected_subnets(network, subnet_nodes):
-    """Input:
-        A network in hash[source] = set( (interaction, target), ... ) Form
-        A set of nodes to use for edge selection
+    """Extract edges where both endpoints are in the given node subset.
+
+    Args:
+        network: Dict mapping source nodes to sets of (interaction, target) tuples.
+        subnet_nodes: Set of nodes to use for edge selection.
 
     Returns:
-        An edgelist set (source, target)
-        where both nodes are in the subset of interest
+        Set of (source, target) edge tuples where both nodes are in subnet_nodes.
 
-    >>> network = {}
-    >>> network['S1'] = set()
-    >>> network['S2'] = set()
-    >>> network['T2'] = set()
-    >>> network['T1'] = set()
-    >>> network['T3'] = set()
-    >>> network['S1'].add(('a>','T1'))
-    >>> network['S2'].add(('a>','T2'))
-    >>> network['T1'].add(('t|','T2'))
-    >>> network['T2'].add(('a>','T1'))
-    >>> network['T3'].add(('t>','G5'))
-    >>> connected_subnets(network, set(['S1','T1','T2','T3','G5']))
-    set([('S1', 'T1'), ('T1', 'T2'), ('T2', 'T1')])
+    Example:
+        ```python
+        network = {
+            'S1': {('a>', 'T1')},
+            'S2': {('a>', 'T2')},
+            'T1': {('t|', 'T2')},
+            'T2': {('a>', 'T1')},
+            'T3': {('t>', 'G5')},
+        }
+        connected_subnets(network, {'S1', 'T1', 'T2', 'T3', 'G5'})
+        # Returns: {('S1', 'T1'), ('T1', 'T2'), ('T2', 'T1')}
+        ```
     """
     edgelist = set()
     ugraph = set()

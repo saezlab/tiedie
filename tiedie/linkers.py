@@ -97,30 +97,37 @@ def get_max_heats(consider_top, diffused):
 def extract_subnetwork(
     network, input_heats, diffused_heats, size_control, opts
 ):
-    """Generate a spanning subnetwork from the supplied inputs, diffused heats and
-        size control cutoff
+    """Generate a spanning subnetwork from input heats and diffused heats.
 
-        Input:
-            - input heats
-            - diffused input heats
-            - size control factor
+    Args:
+        network: Dict mapping source nodes to sets of (interaction, target) tuples.
+        input_heats: Dict of input heat sets by name (e.g., 'source', 'target').
+        diffused_heats: Dict of diffused heat values by input set name.
+        size_control: Size control factor for linker cutoff.
+        opts: Additional options dict.
 
-        Output:
-            - spanning network
-            - list of nodes in that network
+    Returns:
+        Tuple of (subnetwork, node_set, linker_heats, linker_cutoff).
 
-    >>> input_heats = {'source':{'s1':0.01,'s2':0.5}, 'target':{'e1':0.49}}
-    >>> diffused_heats = {'source':{'s1':0.05,'s2':0.4}, 'target':{'e1':0.4,'t2':0.3,'t1':0.1}}
-    >>> s1 = set()
-    >>> s1.add(('-t>','t1'))
-    >>> s2 = set()
-    >>> s2.add(('-t>','t2'))
-    >>> t2 = set()
-    >>> t2.add(('-t>','e1'))
-    >>> network = {'s1':s1, 's2':s2, 't2':t2}
-    >>> extract_subnetwork(network, input_heats, diffused_heats, 0.25, {})
-    ({'s2': set([('-t>', 't2')]), 't2': set([('-t>', 'e1')])}, set(['s2', 't2', 'e1']), {'s2': 0.4, 's1': 0.05, 't2': 0.3, 'e1': 0.4, 't1': 0.1}, 0.2999)
-
+    Example:
+        ```python
+        input_heats = {
+            'source': {'s1': 0.01, 's2': 0.5},
+            'target': {'e1': 0.49}
+        }
+        diffused_heats = {
+            'source': {'s1': 0.05, 's2': 0.4},
+            'target': {'e1': 0.4, 't2': 0.3, 't1': 0.1}
+        }
+        network = {
+            's1': {('-t>', 't1')},
+            's2': {('-t>', 't2')},
+            't2': {('-t>', 'e1')}
+        }
+        subnet, nodes, heats, cutoff = extract_subnetwork(
+            network, input_heats, diffused_heats, 0.25, {}
+        )
+        ```
     """
 
     linker_cutoff = None

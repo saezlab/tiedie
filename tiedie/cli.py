@@ -394,7 +394,7 @@ def main(args=None):
         diffuser = ScipyKernel(opts.network)
 
     # Validate kernel labels match network
-    k_labels = diffuser.getLabels()
+    k_labels = diffuser.get_labels()
 
     if len(network_nodes) != len(k_labels) or len(
         network_nodes.intersection(k_labels)
